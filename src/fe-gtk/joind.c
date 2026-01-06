@@ -31,8 +31,8 @@
 #include <unistd.h>
 #endif
 
-#include "../common/hexchat.h"
-#include "../common/hexchatc.h"
+#include "../common/zoitechat.h"
+#include "../common/zoitechatc.h"
 #include "../common/server.h"
 #include "../common/servlist.h"
 #include "../common/fe.h"
@@ -249,7 +249,7 @@ joind_show_dialog (server *serv)
 	if (serv->network)
 		if (g_ascii_strcasecmp(((ircnet*)serv->network)->name, "Libera.Chat") == 0)
 		{
-			gtk_entry_set_text (GTK_ENTRY (entry1), "#hexchat");
+			gtk_entry_set_text (GTK_ENTRY (entry1), "#zoitechat");
 		}
 
 	gtk_widget_grab_focus (okbutton1);

@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
 
 #include <string.h>
 #include <gio/gio.h>
-#include "hexchat-plugin.h"
+#include "zoitechat-plugin.h"
 
-#define _(x) hexchat_gettext(ph,x)
+#define _(x) zoitechat_gettext(ph,x)
 static void identd_start_server (void);
 
-static hexchat_plugin *ph;
+static zoitechat_plugin *ph;
 static GSocketService *service;
 static GHashTable *responses;
 
@@ -100,12 +100,12 @@ identd_command_cb (char *word[], char *word_eol[], void *userdata)
 		{
 			g_hash_table_insert (responses, GINT_TO_POINTER (port), g_strdup (word[3]));
 			/* Automatically remove entry after 30 seconds */
-			hexchat_hook_timer (ph, 30000, identd_cleanup_response_cb, GINT_TO_POINTER (port));
+			zoitechat_hook_timer (ph, 30000, identd_cleanup_response_cb, GINT_TO_POINTER (port));
 		}
 	}
 	else
 	{
-		hexchat_command (ph, "HELP IDENTD");
+		zoitechat_command (ph, "HELP IDENTD");
 	}
 
 	return HEXCHAT_EAT_ALL;
@@ -172,7 +172,7 @@ identd_read_ready (GDataInputStream *in_stream, GAsyncResult *res, ident_info *i
 					inet_addr = g_inet_socket_address_get_address (G_INET_SOCKET_ADDRESS (sok_addr));
 					addr = g_inet_address_to_string (inet_addr);
 
-					hexchat_printf (ph, _("*\tServicing ident request from %s as %s"), addr, info->username);
+					zoitechat_printf (ph, _("*\tServicing ident request from %s as %s"), addr, info->username);
 
 					g_object_unref (sok_addr);
 					g_object_unref (inet_addr);
@@ -220,12 +220,12 @@ identd_start_server (void)
 	GError *error = NULL;
 	int enabled, port = 113;
 
-	if (hexchat_get_prefs (ph, "identd_server", NULL, &enabled) == 3)
+	if (zoitechat_get_prefs (ph, "identd_server", NULL, &enabled) == 3)
 	{
 		if (!enabled)
 			return;
 	}
-	if (hexchat_get_prefs (ph, "identd_port", NULL, &port) == 2 && (port <= 0 || port > G_MAXUINT16))
+	if (zoitechat_get_prefs (ph, "identd_port", NULL, &port) == 2 && (port <= 0 || port > G_MAXUINT16))
 	{
 		port = 113;
 	}
@@ -235,20 +235,20 @@ identd_start_server (void)
 	g_socket_listener_add_inet_port (G_SOCKET_LISTENER (service), port, NULL, &error);
 	if (error)
 	{
-		hexchat_printf (ph, _("*\tError starting identd server: %s"), error->message);
+		zoitechat_printf (ph, _("*\tError starting identd server: %s"), error->message);
 
 		g_error_free (error);
 		g_clear_object (&service);
 		return;
 	}
-	/*hexchat_printf (ph, "*\tIdentd listening on port: %d", port); */
+	/*zoitechat_printf (ph, "*\tIdentd listening on port: %d", port); */
 
 	g_signal_connect (G_OBJECT (service), "incoming", G_CALLBACK(identd_incoming_cb), NULL);
 	g_socket_service_start (service);
 }
 
 int
-identd_plugin_init (hexchat_plugin *plugin_handle, char **plugin_name,
+identd_plugin_init (zoitechat_plugin *plugin_handle, char **plugin_name,
 					char **plugin_desc, char **plugin_version, char *arg)
 {
 	ph = plugin_handle;
@@ -258,7 +258,7 @@ identd_plugin_init (hexchat_plugin *plugin_handle, char **plugin_name,
 
 
 	responses = g_hash_table_new_full (NULL, NULL, NULL, g_free);
-	hexchat_hook_command (ph, "IDENTD", HEXCHAT_PRI_NORM, identd_command_cb,
+	zoitechat_hook_command (ph, "IDENTD", HEXCHAT_PRI_NORM, identd_command_cb,
 						_("IDENTD <port> <username>"), NULL);
 
 	identd_start_server ();

@@ -46,7 +46,7 @@
 #endif
 
 #include "../common/cfgfiles.h"
-#include "../common/hexchatc.h"
+#include "../common/zoitechatc.h"
 #include "palette.h"
 #include "xtext.h"
 
@@ -264,7 +264,7 @@ sexy_spell_entry_class_init(SexySpellEntryClass *klass)
 					   G_SIGNAL_RUN_LAST,
 					   G_STRUCT_OFFSET(SexySpellEntryClass, word_check),
 					   (GSignalAccumulator) spell_accumulator, NULL,
-					   _hexchat_marshal_BOOLEAN__STRING,
+					   _zoitechat_marshal_BOOLEAN__STRING,
 					   G_TYPE_BOOLEAN,
 					   1, G_TYPE_STRING);
 
@@ -1331,7 +1331,7 @@ sexy_spell_entry_activate_language_internal(SexySpellEntry *entry, const gchar *
 		return FALSE;
 	}
 
-	enchant_dict_add_to_session (dict, "HexChat", strlen("HexChat"));
+	enchant_dict_add_to_session (dict, "ZoiteChat", strlen("ZoiteChat"));
 	entry->priv->dict_list = g_slist_append(entry->priv->dict_list, (gpointer) dict);
 	g_hash_table_insert(entry->priv->dict_hash, get_lang_from_dict(dict), (gpointer) dict);
 

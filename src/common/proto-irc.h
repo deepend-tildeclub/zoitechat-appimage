@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -18,7 +18,7 @@
  */
 
 #include <time.h>
-#include "hexchat.h"
+#include "zoitechat.h"
 
 #ifndef HEXCHAT_PROTO_H
 #define HEXCHAT_PROTO_H

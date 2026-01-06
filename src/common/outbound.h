@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -20,7 +20,7 @@
 #ifndef HEXCHAT_OUTBOUND_H
 #define HEXCHAT_OUTBOUND_H
 
-#include "hexchat.h"
+#include "zoitechat.h"
 
 extern const struct commands xc_cmds[];
 extern GSList *menu_list;

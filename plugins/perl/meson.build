@@ -1,15 +1,15 @@
 generate_perl_header = find_program('generate_header.py')
 
-hexchat_perl_module = custom_target('hexchat-perl-header',
+zoitechat_perl_module = custom_target('zoitechat-perl-header',
   input: [
-    'lib/HexChat.pm',
+    'lib/ZoiteChat.pm',
     'lib/Xchat.pm',
-    'lib/HexChat/Embed.pm',
-    'lib/HexChat/List/Network.pm',
-    'lib/HexChat/List/Network/Entry.pm',
-    'lib/HexChat/List/Network/AutoJoin.pm',
+    'lib/ZoiteChat/Embed.pm',
+    'lib/ZoiteChat/List/Network.pm',
+    'lib/ZoiteChat/List/Network/Entry.pm',
+    'lib/ZoiteChat/List/Network/AutoJoin.pm',
   ],
-  output: 'hexchat.pm.h',
+  output: 'zoitechat.pm.h',
   command: [generate_perl_header, '@OUTPUT@', '@INPUT@']
 )
 
@@ -82,8 +82,8 @@ perl_dep = declare_dependency(
 )
 
 shared_module('perl',
-  sources: ['perl.c', hexchat_perl_module, irc_perl_module],
-  dependencies: [libgio_dep, hexchat_plugin_dep, perl_dep],
+  sources: ['perl.c', zoitechat_perl_module, irc_perl_module],
+  dependencies: [libgio_dep, zoitechat_plugin_dep, perl_dep],
   install: true,
   install_dir: plugindir,
   install_rpath: perl_rpath,

@@ -4,7 +4,7 @@ desktop_utils = find_program('desktop-file-validate', required: false)
 
 if get_option('gtk-frontend')
   if get_option('install-appdata')
-    hexchat_appdata = i18n.merge_file(
+    zoitechat_appdata = i18n.merge_file(
       input: 'io.github.Hexchat.appdata.xml.in',
       output: 'io.github.Hexchat.appdata.xml',
       po_dir: '../../po',
@@ -15,16 +15,16 @@ if get_option('gtk-frontend')
     appstream_util = find_program('appstream-util', required: false)
     if appstream_util.found()
       test('Validate io.github.Hexchat.appdata.xml', appstream_util,
-        args: ['validate-relax', hexchat_appdata]
+        args: ['validate-relax', zoitechat_appdata]
       )
     endif
   endif
 
   desktop_conf = configuration_data()
   if dbus_glib_dep.found()
-    desktop_conf.set('exec_command', 'hexchat --existing %U')
+    desktop_conf.set('exec_command', 'zoitechat --existing %U')
   else
-    desktop_conf.set('exec_command', 'hexchat %U')
+    desktop_conf.set('exec_command', 'zoitechat %U')
   endif
 
   desktop_file = configure_file(
@@ -33,7 +33,7 @@ if get_option('gtk-frontend')
     configuration: desktop_conf
   )
 
-  hexchat_desktop = i18n.merge_file(
+  zoitechat_desktop = i18n.merge_file(
     input: desktop_file,
     output: 'io.github.Hexchat.desktop',
     po_dir: '../../po',
@@ -44,7 +44,7 @@ if get_option('gtk-frontend')
 
   if desktop_utils.found()
     test('Validate io.github.Hexchat.desktop', desktop_utils,
-      args: [hexchat_desktop]
+      args: [zoitechat_desktop]
     )
   endif
 endif

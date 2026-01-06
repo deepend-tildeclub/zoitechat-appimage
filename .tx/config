@@ -1,8 +1,8 @@
 [main]
 host = https://www.transifex.com
 
-[hexchat.main]
+[zoitechat.main]
 file_filter = po/<lang>.po
-source_file = po/hexchat.pot
+source_file = po/zoitechat.pot
 source_lang = en
 type = PO

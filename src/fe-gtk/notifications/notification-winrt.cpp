@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (c) 2014 Leetsoftwerx
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -88,7 +88,7 @@ extern "C"
 		try
 		{
 			if (!notifier)
-				notifier = ToastNotificationManager::CreateToastNotifier (L"HexChat.Desktop.Notify");
+				notifier = ToastNotificationManager::CreateToastNotifier (L"ZoiteChat.Desktop.Notify");
 		}
 		catch (Platform::Exception ^ ex)
 		{

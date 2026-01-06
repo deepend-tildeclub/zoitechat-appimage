@@ -4,7 +4,7 @@
   "runtime": "org.gnome.Platform",
   "runtime-version": "40",
   "sdk": "org.gnome.Sdk",
-  "command": "hexchat",
+  "command": "zoitechat",
   "finish-args": [
     "--share=ipc",
     "--socket=x11",
@@ -21,7 +21,7 @@
       "version": "20.08",
       "directory": "extensions",
       "add-ld-path": "lib",
-      "merge-dirs": "lib/hexchat/plugins",
+      "merge-dirs": "lib/zoitechat/plugins",
       "subdirectories": true,
       "no-autodownload": true,
       "autodelete": true
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "name": "hexchat",
+      "name": "zoitechat",
       "buildsystem": "meson",
       "config-opts": [
         "--buildtype=release",

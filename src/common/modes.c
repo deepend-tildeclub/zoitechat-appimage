@@ -20,8 +20,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "hexchat.h"
-#include "hexchatc.h"
+#include "zoitechat.h"
+#include "zoitechatc.h"
 #include "modes.h"
 #include "server.h"
 #include "text.h"

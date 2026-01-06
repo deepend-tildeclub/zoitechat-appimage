@@ -22,15 +22,15 @@
 
 #include "fe-gtk.h"
 
-#include "../common/hexchat.h"
+#include "../common/zoitechat.h"
 #define PLUGIN_C
-typedef struct session hexchat_context;
-#include "../common/hexchat-plugin.h"
+typedef struct session zoitechat_context;
+#include "../common/zoitechat-plugin.h"
 #include "../common/plugin.h"
 #include "../common/util.h"
 #include "../common/outbound.h"
 #include "../common/fe.h"
-#include "../common/hexchatc.h"
+#include "../common/zoitechatc.h"
 #include "../common/cfgfiles.h"
 #include "gtkutil.h"
 #include "maingui.h"
@@ -110,7 +110,7 @@ extern GSList *plugin_list;
 void
 fe_pluginlist_update (void)
 {
-	hexchat_plugin *pl;
+	zoitechat_plugin *pl;
 	GSList *list;
 	GtkTreeView *view;
 	GtkListStore *store;

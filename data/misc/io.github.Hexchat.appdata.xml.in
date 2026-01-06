@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>io.github.Hexchat</id>
-  <name>HexChat</name>
+  <name>ZoiteChat</name>
   <launchable type="desktop-id">io.github.Hexchat.desktop</launchable>
-  <developer_name>HexChat</developer_name>
+  <developer_name>ZoiteChat</developer_name>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-2.0+</project_license>
-  <translation type="gettext">hexchat</translation>
+  <translation type="gettext">zoitechat</translation>
   <summary>IRC Client</summary>
   <description>
-    <p>HexChat is an easy to use yet extensible IRC Client. It allows you to securely join multiple networks and talk to users privately or in channels using a customizable interface. You can even transfer files.</p>
-    <p>HexChat supports features such as: DCC, SASL, proxies, spellcheck, alerts, logging, custom themes, and Python/Perl scripts.</p>
+    <p>ZoiteChat is an easy to use yet extensible IRC Client. It allows you to securely join multiple networks and talk to users privately or in channels using a customizable interface. You can even transfer files.</p>
+    <p>ZoiteChat supports features such as: DCC, SASL, proxies, spellcheck, alerts, logging, custom themes, and Python/Perl scripts.</p>
   </description>
-  <url type="homepage">http://hexchat.github.io</url>
-  <url type="bugtracker">https://github.com/hexchat/hexchat</url>
+  <url type="homepage">http://zoitechat.github.io</url>
+  <url type="bugtracker">https://github.com/zoitechat/zoitechat</url>
   <url type="donation">https://goo.gl/jESZvU</url>
-  <url type="help">https://hexchat.readthedocs.io/en/latest/</url>
+  <url type="help">https://zoitechat.readthedocs.io/en/latest/</url>
   <screenshots>
     <screenshot type="default">
       <image>http://i.imgur.com/tLMguQz.png</image>
@@ -24,7 +24,7 @@
   </screenshots>
   <provides>
     <!-- Renamed from this -->
-    <id>hexchat.desktop</id>
+    <id>zoitechat.desktop</id>
   </provides>
   <releases>
     <release date="2024-02-07" version="2.16.2">

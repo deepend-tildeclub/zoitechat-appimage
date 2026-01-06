@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -20,9 +20,9 @@
 #ifndef HEXCHAT_C_H
 #define HEXCHAT_C_H
 
-extern struct hexchatprefs prefs;
+extern struct zoitechatprefs prefs;
 
-extern int hexchat_is_quitting;
+extern int zoitechat_is_quitting;
 extern gint arg_skip_plugins;	/* command-line args */
 extern gint arg_dont_autoconnect;
 extern char *arg_url;
@@ -50,13 +50,13 @@ extern GList *sess_list_by_lastact[];
 session * find_channel (server *serv, char *chan);
 session * find_dialog (server *serv, char *nick);
 session * new_ircwindow (server *serv, char *name, int type, int focus);
-void hexchat_reinit_timers (void);
+void zoitechat_reinit_timers (void);
 void lastact_update (session * sess);
 session * lastact_getfirst (int (*filter) (session *sess));
 int is_session (session * sess);
 void session_free (session *killsess);
 void lag_check (void);
-void hexchat_exit (void);
-void hexchat_exec (const char *cmd);
+void zoitechat_exit (void);
+void zoitechat_exec (const char *cmd);
 
 #endif

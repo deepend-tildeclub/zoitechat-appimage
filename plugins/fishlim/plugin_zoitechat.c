@@ -29,7 +29,7 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hexchat-plugin.h"
+#include "zoitechat-plugin.h"
 
 #include "fish.h"
 #include "dh1080.h"
@@ -50,7 +50,7 @@ static const char usage_notice[] = "Usage: NOTICE+ <nick or #channel> <notice>";
 static const char usage_msg[] = "Usage: MSG+ <nick or #channel> <message>";
 
 
-static hexchat_plugin *ph;
+static zoitechat_plugin *ph;
 static GHashTable *pending_exchanges;
 
 
@@ -58,7 +58,7 @@ static GHashTable *pending_exchanges;
  * Compare two nicks using the current plugin
  */
 int irc_nick_cmp(const char *a, const char *b) {
-    return hexchat_nickcmp (ph, a, b);
+    return zoitechat_nickcmp (ph, a, b);
 }
 
 /**
@@ -67,7 +67,7 @@ int irc_nick_cmp(const char *a, const char *b) {
 gchar *get_config_filename(void) {
     char *filename_fs, *filename_utf8;
 
-    filename_utf8 = g_build_filename(hexchat_get_info(ph, "configdir"), "addon_fishlim.conf", NULL);
+    filename_utf8 = g_build_filename(zoitechat_get_info(ph, "configdir"), "addon_fishlim.conf", NULL);
     filename_fs = g_filename_from_utf8 (filename_utf8, -1, NULL, NULL, NULL);
 
     g_free (filename_utf8);
@@ -75,34 +75,34 @@ gchar *get_config_filename(void) {
 }
 
 static inline gboolean irc_is_query (const char *name) {
-    const char *chantypes = hexchat_list_str (ph, NULL, "chantypes");
+    const char *chantypes = zoitechat_list_str (ph, NULL, "chantypes");
 
     return strchr (chantypes, name[0]) == NULL;
 }
 
-static hexchat_context *find_context_on_network (const char *name) {
-    hexchat_list *channels;
-    hexchat_context *ret = NULL;
+static zoitechat_context *find_context_on_network (const char *name) {
+    zoitechat_list *channels;
+    zoitechat_context *ret = NULL;
     int id;
 
-    if (hexchat_get_prefs(ph, "id", NULL, &id) != 2)
+    if (zoitechat_get_prefs(ph, "id", NULL, &id) != 2)
         return NULL;
 
-    channels = hexchat_list_get(ph, "channels");
+    channels = zoitechat_list_get(ph, "channels");
     if (!channels)
         return NULL;
 
-    while (hexchat_list_next(ph, channels)) {
-        int chan_id = hexchat_list_int(ph, channels, "id");
-        const char *chan_name = hexchat_list_str(ph, channels, "channel");
+    while (zoitechat_list_next(ph, channels)) {
+        int chan_id = zoitechat_list_int(ph, channels, "id");
+        const char *chan_name = zoitechat_list_str(ph, channels, "channel");
 
         if (chan_id == id && chan_name && irc_nick_cmp (chan_name, name) == 0) {
-            ret = (hexchat_context*)hexchat_list_str(ph, channels, "context");
+            ret = (zoitechat_context*)zoitechat_list_str(ph, channels, "context");
             break;
         }
     };
 
-    hexchat_list_free(ph, channels);
+    zoitechat_list_free(ph, channels);
     return ret;
 }
 
@@ -113,23 +113,23 @@ static hexchat_context *find_context_on_network (const char *name) {
 char *get_my_info(const char *field, gboolean find_in_other_context) {
     char *result = NULL;
     const char *own_nick;
-    hexchat_list *list;
-    hexchat_context *ctx_current, *ctx_channel;
+    zoitechat_list *list;
+    zoitechat_context *ctx_current, *ctx_channel;
 
     /* Display message */
-    own_nick = hexchat_get_info(ph, "nick");
+    own_nick = zoitechat_get_info(ph, "nick");
 
     if (!own_nick)
         return NULL;
 
     /* Get field for own nick if any */
-    list = hexchat_list_get(ph, "users");
+    list = zoitechat_list_get(ph, "users");
     if (list) {
-        while (hexchat_list_next(ph, list)) {
-            if (irc_nick_cmp(own_nick, hexchat_list_str(ph, list, "nick")) == 0)
-                result = g_strdup(hexchat_list_str(ph, list, field));
+        while (zoitechat_list_next(ph, list)) {
+            if (irc_nick_cmp(own_nick, zoitechat_list_str(ph, list, "nick")) == 0)
+                result = g_strdup(zoitechat_list_str(ph, list, field));
         }
-        hexchat_list_free(ph, list);
+        zoitechat_list_free(ph, list);
     }
 
     if (result) {
@@ -141,21 +141,21 @@ char *get_my_info(const char *field, gboolean find_in_other_context) {
         return NULL;
     }
 
-    list = hexchat_list_get(ph, "channels");
+    list = zoitechat_list_get(ph, "channels");
     if (list) {
-        ctx_current = hexchat_get_context(ph);
-        while (hexchat_list_next(ph, list)) {
-            ctx_channel = (hexchat_context *) hexchat_list_str(ph, list, "context");
+        ctx_current = zoitechat_get_context(ph);
+        while (zoitechat_list_next(ph, list)) {
+            ctx_channel = (zoitechat_context *) zoitechat_list_str(ph, list, "context");
 
-            hexchat_set_context(ph, ctx_channel);
+            zoitechat_set_context(ph, ctx_channel);
             result = get_my_info(field, FALSE);
-            hexchat_set_context(ph, ctx_current);
+            zoitechat_set_context(ph, ctx_current);
 
             if (result) {
                 break;
             }
         }
-        hexchat_list_free(ph, list);
+        zoitechat_list_free(ph, list);
     }
 
     return result;
@@ -187,7 +187,7 @@ int get_prefix_length(void) {
     int prefix_len = 0;
 
     /* ':! ' + 'nick' + 'ident@host', e.g. ':user!~name@mynet.com ' */
-    prefix_len = 3 + strlen(hexchat_get_info(ph, "nick"));
+    prefix_len = 3 + strlen(zoitechat_get_info(ph, "nick"));
     own_host = get_my_own_host();
     if (own_host) {
         prefix_len += strlen(own_host);
@@ -278,11 +278,11 @@ char *decrypt_raw_message(const char *message, const char *key) {
 }
 
 /*static int handle_debug(char *word[], char *word_eol[], void *userdata) {
-    hexchat_printf(ph, "debug incoming: ");
+    zoitechat_printf(ph, "debug incoming: ");
     for (size_t i = 1; word[i] != NULL && word[i][0] != '\0'; i++) {
-        hexchat_printf(ph, ">%s< ", word[i]);
+        zoitechat_printf(ph, ">%s< ", word[i]);
     }
-    hexchat_printf(ph, "\n");
+    zoitechat_printf(ph, "\n");
     return HEXCHAT_EAT_NONE;
 }*/
 
@@ -296,7 +296,7 @@ static int handle_outgoing(char *word[], char *word_eol[], void *userdata) {
     GString *command;
     GSList *encrypted_list, *encrypted_item;
 
-    const char *channel = hexchat_get_info(ph, "channel");
+    const char *channel = zoitechat_get_info(ph, "channel");
 
     /* Check if we can encrypt */
     if (!fish_nick_has_key(channel)) return HEXCHAT_EAT_NONE;
@@ -317,14 +317,14 @@ static int handle_outgoing(char *word[], char *word_eol[], void *userdata) {
     message = g_strconcat("[", fish_modes[mode], "] ", word_eol[1], NULL);
 
     /* Display message */
-    hexchat_emit_print(ph, "Your Message", hexchat_get_info(ph, "nick"), message, prefix, NULL);
+    zoitechat_emit_print(ph, "Your Message", zoitechat_get_info(ph, "nick"), message, prefix, NULL);
     g_free(message);
 
     /* Send encrypted messages */
     encrypted_item = encrypted_list;
     while (encrypted_item)
     {
-        hexchat_commandf(ph, "%s%s", command->str, (char *)encrypted_item->data);
+        zoitechat_commandf(ph, "%s%s", command->str, (char *)encrypted_item->data);
 
         encrypted_item = encrypted_item->next;
     }
@@ -339,7 +339,7 @@ static int handle_outgoing(char *word[], char *word_eol[], void *userdata) {
 /**
  * Called when a channel message or private message is received.
  */
-static int handle_incoming(char *word[], char *word_eol[], hexchat_event_attrs *attrs, void *userdata) {
+static int handle_incoming(char *word[], char *word_eol[], zoitechat_event_attrs *attrs, void *userdata) {
     const char *prefix;
     const char *command;
     const char *recipient;
@@ -392,7 +392,7 @@ static int handle_incoming(char *word[], char *word_eol[], hexchat_event_attrs *
     /* Fake server message
      * RECV command will throw this function again, if message have multiple
      * encrypted data, we will decrypt all */
-    hexchat_command(ph, message->str);
+    zoitechat_command(ph, message->str);
     g_string_free (message, TRUE);
 
     return HEXCHAT_EAT_HEXCHAT;
@@ -401,7 +401,7 @@ static int handle_incoming(char *word[], char *word_eol[], hexchat_event_attrs *
 static int handle_keyx_notice(char *word[], char *word_eol[], void *userdata) {
     const char *dh_message = word[4];
     const char *dh_pubkey = word[5];
-    hexchat_context *query_ctx;
+    zoitechat_context *query_ctx;
     const char *prefix;
     char *sender, *secret_key, *priv_key = NULL;
     enum fish_mode mode = FISH_ECB_MODE;
@@ -415,7 +415,7 @@ static int handle_keyx_notice(char *word[], char *word_eol[], void *userdata) {
     sender = irc_prefix_get_nick(prefix);
     query_ctx = find_context_on_network(sender);
     if (query_ctx)
-        g_assert(hexchat_set_context(ph, query_ctx) == 1);
+        g_assert(zoitechat_set_context(ph, query_ctx) == 1);
 
     dh_message++; /* : prefix */
 
@@ -425,12 +425,12 @@ static int handle_keyx_notice(char *word[], char *word_eol[], void *userdata) {
     if (!strcmp(dh_message, "DH1080_INIT")) {
         char *pub_key;
 
-        hexchat_printf(ph, "Received public key from %s (%s), sending mine...", sender, fish_modes[mode]);
+        zoitechat_printf(ph, "Received public key from %s (%s), sending mine...", sender, fish_modes[mode]);
         if (dh1080_generate_key(&priv_key, &pub_key)) {
-            hexchat_commandf(ph, "quote NOTICE %s :DH1080_FINISH %s%s", sender, pub_key, (mode == FISH_CBC_MODE) ? " CBC" : "");
+            zoitechat_commandf(ph, "quote NOTICE %s :DH1080_FINISH %s%s", sender, pub_key, (mode == FISH_CBC_MODE) ? " CBC" : "");
             g_free(pub_key);
         } else {
-            hexchat_print(ph, "Failed to generate keys");
+            zoitechat_print(ph, "Failed to generate keys");
             goto cleanup;
         }
     } else if (!strcmp (dh_message, "DH1080_FINISH")) {
@@ -441,7 +441,7 @@ static int handle_keyx_notice(char *word[], char *word_eol[], void *userdata) {
         g_free(sender_lower);
 
         if (!priv_key) {
-            hexchat_printf(ph, "Received a key exchange response for unknown user: %s", sender);
+            zoitechat_printf(ph, "Received a key exchange response for unknown user: %s", sender);
             goto cleanup;
         }
     } else {
@@ -452,10 +452,10 @@ static int handle_keyx_notice(char *word[], char *word_eol[], void *userdata) {
 
     if (dh1080_compute_key(priv_key, dh_pubkey, &secret_key)) {
         keystore_store_key(sender, secret_key, mode);
-        hexchat_printf(ph, "Stored new key for %s (%s)", sender, fish_modes[mode]);
+        zoitechat_printf(ph, "Stored new key for %s (%s)", sender, fish_modes[mode]);
         g_free(secret_key);
     } else {
-        hexchat_print(ph, "Failed to create secret key!");
+        zoitechat_print(ph, "Failed to create secret key!");
     }
 
 cleanup:
@@ -474,13 +474,13 @@ static int handle_setkey(char *word[], char *word_eol[], void *userdata) {
 
     /* Check syntax */
     if (*word[2] == '\0') {
-        hexchat_printf(ph, "%s\n", usage_setkey);
+        zoitechat_printf(ph, "%s\n", usage_setkey);
         return HEXCHAT_EAT_HEXCHAT;
     }
 
     if (*word[3] == '\0') {
         /* /setkey password */
-        nick = hexchat_get_info(ph, "channel");
+        nick = zoitechat_get_info(ph, "channel");
         key = word_eol[2];
     } else {
         /* /setkey #channel password */
@@ -498,9 +498,9 @@ static int handle_setkey(char *word[], char *word_eol[], void *userdata) {
 
     /* Set password */
     if (keystore_store_key(nick, key, mode)) {
-        hexchat_printf(ph, "Stored key for %s (%s)\n", nick, fish_modes[mode]);
+        zoitechat_printf(ph, "Stored key for %s (%s)\n", nick, fish_modes[mode]);
     } else {
-        hexchat_printf(ph, "\00305Failed to store key in addon_fishlim.conf\n");
+        zoitechat_printf(ph, "\00305Failed to store key in addon_fishlim.conf\n");
     }
 
     return HEXCHAT_EAT_HEXCHAT;
@@ -517,21 +517,21 @@ static int handle_delkey(char *word[], char *word_eol[], void *userdata) {
     if (*word[2] != '\0') {
         nick = g_strstrip(g_strdup(word_eol[2]));
     } else { /* Delete key from current context */
-        nick = g_strdup(hexchat_get_info(ph, "channel"));
-        ctx_type = hexchat_list_int(ph, NULL, "type");
+        nick = g_strdup(zoitechat_get_info(ph, "channel"));
+        ctx_type = zoitechat_list_int(ph, NULL, "type");
 
         /* Only allow channel or dialog */
         if (ctx_type < 2 || ctx_type > 3) {
-            hexchat_printf(ph, "%s\n", usage_delkey);
+            zoitechat_printf(ph, "%s\n", usage_delkey);
             return HEXCHAT_EAT_HEXCHAT;
         }
     }
 
     /* Delete the given nick from the key store */
     if (keystore_delete_nick(nick)) {
-        hexchat_printf(ph, "Deleted key for %s\n", nick);
+        zoitechat_printf(ph, "Deleted key for %s\n", nick);
     } else {
-        hexchat_printf(ph, "\00305Failed to delete key in addon_fishlim.conf!\n");
+        zoitechat_printf(ph, "\00305Failed to delete key in addon_fishlim.conf!\n");
     }
     g_free(nick);
 
@@ -540,36 +540,36 @@ static int handle_delkey(char *word[], char *word_eol[], void *userdata) {
 
 static int handle_keyx(char *word[], char *word_eol[], void *userdata) {
     const char *target = word[2];
-    hexchat_context *query_ctx = NULL;
+    zoitechat_context *query_ctx = NULL;
     char *pub_key, *priv_key;
     int ctx_type;
 
     if (*target)
         query_ctx = find_context_on_network(target);
     else {
-        target = hexchat_get_info(ph, "channel");
-        query_ctx = hexchat_get_context (ph);
+        target = zoitechat_get_info(ph, "channel");
+        query_ctx = zoitechat_get_context (ph);
     }
 
     if (query_ctx) {
-        g_assert(hexchat_set_context(ph, query_ctx) == 1);
-        ctx_type = hexchat_list_int(ph, NULL, "type");
+        g_assert(zoitechat_set_context(ph, query_ctx) == 1);
+        ctx_type = zoitechat_list_int(ph, NULL, "type");
     }
 
     if ((query_ctx && ctx_type != 3) || (!query_ctx && !irc_is_query(target))) {
-        hexchat_print(ph, "You can only exchange keys with individuals");
+        zoitechat_print(ph, "You can only exchange keys with individuals");
         return HEXCHAT_EAT_ALL;
     }
 
     if (dh1080_generate_key(&priv_key, &pub_key)) {
         g_hash_table_replace (pending_exchanges, g_ascii_strdown(target, -1), priv_key);
 
-        hexchat_commandf(ph, "quote NOTICE %s :DH1080_INIT %s CBC", target, pub_key);
-        hexchat_printf(ph, "Sent public key to %s (CBC), waiting for reply...", target);
+        zoitechat_commandf(ph, "quote NOTICE %s :DH1080_INIT %s CBC", target, pub_key);
+        zoitechat_printf(ph, "Sent public key to %s (CBC), waiting for reply...", target);
 
         g_free(pub_key);
     } else {
-        hexchat_print(ph, "Failed to generate keys");
+        zoitechat_print(ph, "Failed to generate keys");
     }
 
     return HEXCHAT_EAT_ALL;
@@ -586,20 +586,20 @@ static int handle_crypt_topic(char *word[], char *word_eol[], void *userdata) {
     GSList *encrypted_list;
 
     if (!*topic) {
-        hexchat_print(ph, usage_topic);
+        zoitechat_print(ph, usage_topic);
         return HEXCHAT_EAT_ALL;
     }
 
-    if (hexchat_list_int(ph, NULL, "type") != 2) {
-        hexchat_printf(ph, "Please change to the channel window where you want to set the topic!");
+    if (zoitechat_list_int(ph, NULL, "type") != 2) {
+        zoitechat_printf(ph, "Please change to the channel window where you want to set the topic!");
         return HEXCHAT_EAT_ALL;
     }
 
-    target = hexchat_get_info(ph, "channel");
+    target = zoitechat_get_info(ph, "channel");
 
     /* Check if we can encrypt */
     if (!fish_nick_has_key(target)) {
-        hexchat_printf(ph, "/topic+ error, no key found for %s", target);
+        zoitechat_printf(ph, "/topic+ error, no key found for %s", target);
         return HEXCHAT_EAT_ALL;
     }
 
@@ -609,11 +609,11 @@ static int handle_crypt_topic(char *word[], char *word_eol[], void *userdata) {
     encrypted_list = fish_encrypt_for_nick(target, topic, &mode, get_prefix_length() + command->len);
     if (!encrypted_list) {
         g_string_free(command, TRUE);
-        hexchat_printf(ph, "/topic+ error, can't encrypt %s", target);
+        zoitechat_printf(ph, "/topic+ error, can't encrypt %s", target);
         return HEXCHAT_EAT_ALL;
     }
 
-    hexchat_commandf(ph, "%s%s", command->str, (char *) encrypted_list->data);
+    zoitechat_commandf(ph, "%s%s", command->str, (char *) encrypted_list->data);
 
     g_string_free(command, TRUE);
     g_slist_free_full(encrypted_list, g_free);
@@ -633,13 +633,13 @@ static int handle_crypt_notice(char *word[], char *word_eol[], void *userdata) {
     GSList *encrypted_list, *encrypted_item;
 
     if (!*target || !*notice) {
-        hexchat_print(ph, usage_notice);
+        zoitechat_print(ph, usage_notice);
         return HEXCHAT_EAT_ALL;
     }
 
     /* Check if we can encrypt */
     if (!fish_nick_has_key(target)) {
-        hexchat_printf(ph, "/notice+ error, no key found for %s.", target);
+        zoitechat_printf(ph, "/notice+ error, no key found for %s.", target);
         return HEXCHAT_EAT_ALL;
     }
 
@@ -649,17 +649,17 @@ static int handle_crypt_notice(char *word[], char *word_eol[], void *userdata) {
     encrypted_list = fish_encrypt_for_nick(target, notice, &mode, get_prefix_length() + command->len);
     if (!encrypted_list) {
         g_string_free(command, TRUE);
-        hexchat_printf(ph, "/notice+ error, can't encrypt %s", target);
+        zoitechat_printf(ph, "/notice+ error, can't encrypt %s", target);
         return HEXCHAT_EAT_ALL;
     }
 
     notice_flag = g_strconcat("[", fish_modes[mode], "] ", notice, NULL);
-    hexchat_emit_print(ph, "Notice Send", target, notice_flag);
+    zoitechat_emit_print(ph, "Notice Send", target, notice_flag);
 
     /* Send encrypted messages */
     encrypted_item = encrypted_list;
     while (encrypted_item) {
-        hexchat_commandf(ph, "%s%s", command->str, (char *) encrypted_item->data);
+        zoitechat_commandf(ph, "%s%s", command->str, (char *) encrypted_item->data);
 
         encrypted_item = encrypted_item->next;
     }
@@ -679,19 +679,19 @@ static int handle_crypt_msg(char *word[], char *word_eol[], void *userdata) {
     const char *message = word_eol[3];
     char *message_flag;
     char *prefix;
-    hexchat_context *query_ctx;
+    zoitechat_context *query_ctx;
     enum fish_mode mode;
     GString *command;
     GSList *encrypted_list, *encrypted_item;
 
     if (!*target || !*message) {
-        hexchat_print(ph, usage_msg);
+        zoitechat_print(ph, usage_msg);
         return HEXCHAT_EAT_ALL;
     }
 
     /* Check if we can encrypt */
     if (!fish_nick_has_key(target)) {
-        hexchat_printf(ph, "/msg+ error, no key found for %s", target);
+        zoitechat_printf(ph, "/msg+ error, no key found for %s", target);
         return HEXCHAT_EAT_ALL;
     }
 
@@ -701,14 +701,14 @@ static int handle_crypt_msg(char *word[], char *word_eol[], void *userdata) {
     encrypted_list = fish_encrypt_for_nick(target, message, &mode, get_prefix_length() + command->len);
     if (!encrypted_list) {
         g_string_free(command, TRUE);
-        hexchat_printf(ph, "/msg+ error, can't encrypt %s", target);
+        zoitechat_printf(ph, "/msg+ error, can't encrypt %s", target);
         return HEXCHAT_EAT_ALL;
     }
 
     /* Send encrypted messages */
     encrypted_item = encrypted_list;
     while (encrypted_item) {
-        hexchat_commandf(ph, "%s%s", command->str, (char *) encrypted_item->data);
+        zoitechat_commandf(ph, "%s%s", command->str, (char *) encrypted_item->data);
 
         encrypted_item = encrypted_item->next;
     }
@@ -718,24 +718,24 @@ static int handle_crypt_msg(char *word[], char *word_eol[], void *userdata) {
 
     query_ctx = find_context_on_network(target);
     if (query_ctx) {
-        g_assert(hexchat_set_context(ph, query_ctx) == 1);
+        g_assert(zoitechat_set_context(ph, query_ctx) == 1);
 
         prefix = get_my_own_prefix();
 
         /* Add encrypted flag */
         message_flag = g_strconcat("[", fish_modes[mode], "] ", message, NULL);
-        hexchat_emit_print(ph, "Your Message", hexchat_get_info(ph, "nick"), message_flag, prefix, NULL);
+        zoitechat_emit_print(ph, "Your Message", zoitechat_get_info(ph, "nick"), message_flag, prefix, NULL);
         g_free(prefix);
         g_free(message_flag);
     } else {
-        hexchat_emit_print(ph, "Message Send", target, message);
+        zoitechat_emit_print(ph, "Message Send", target, message);
     }
 
     return HEXCHAT_EAT_ALL;
 }
 
 static int handle_crypt_me(char *word[], char *word_eol[], void *userdata) {
-    const char *channel = hexchat_get_info(ph, "channel");
+    const char *channel = zoitechat_get_info(ph, "channel");
     enum fish_mode mode;
     GString *command;
     GSList *encrypted_list, *encrypted_item;
@@ -752,16 +752,16 @@ static int handle_crypt_me(char *word[], char *word_eol[], void *userdata) {
     encrypted_list = fish_encrypt_for_nick(channel, word_eol[2], &mode, get_prefix_length() + command->len + 2);
     if (!encrypted_list) {
         g_string_free(command, TRUE);
-        hexchat_printf(ph, "/me error, can't encrypt %s", channel);
+        zoitechat_printf(ph, "/me error, can't encrypt %s", channel);
         return HEXCHAT_EAT_ALL;
     }
 
-    hexchat_emit_print(ph, "Your Action", hexchat_get_info(ph, "nick"), word_eol[2], NULL);
+    zoitechat_emit_print(ph, "Your Action", zoitechat_get_info(ph, "nick"), word_eol[2], NULL);
 
     /* Send encrypted messages */
     encrypted_item = encrypted_list;
     while (encrypted_item) {
-        hexchat_commandf(ph, "%s%s \001", command->str, (char *) encrypted_item->data);
+        zoitechat_commandf(ph, "%s%s \001", command->str, (char *) encrypted_item->data);
 
         encrypted_item = encrypted_item->next;
     }
@@ -775,7 +775,7 @@ static int handle_crypt_me(char *word[], char *word_eol[], void *userdata) {
 /**
  * Returns the plugin name version information.
  */
-void hexchat_plugin_get_info(const char **name, const char **desc,
+void zoitechat_plugin_get_info(const char **name, const char **desc,
                            const char **version, void **reserved) {
     *name = plugin_name;
     *desc = plugin_desc;
@@ -785,35 +785,35 @@ void hexchat_plugin_get_info(const char **name, const char **desc,
 /**
  * Plugin entry point.
  */
-int hexchat_plugin_init(hexchat_plugin *plugin_handle,
+int zoitechat_plugin_init(zoitechat_plugin *plugin_handle,
                       const char **name,
                       const char **desc,
                       const char **version,
                       char *arg) {
     ph = plugin_handle;
 
-    /* Send our info to HexChat */
+    /* Send our info to ZoiteChat */
     *name = plugin_name;
     *desc = plugin_desc;
     *version = plugin_version;
 
     /* Register commands */
-    hexchat_hook_command(ph, "SETKEY", HEXCHAT_PRI_NORM, handle_setkey, usage_setkey, NULL);
-    hexchat_hook_command(ph, "DELKEY", HEXCHAT_PRI_NORM, handle_delkey, usage_delkey, NULL);
-    hexchat_hook_command(ph, "KEYX", HEXCHAT_PRI_NORM, handle_keyx, usage_keyx, NULL);
-    hexchat_hook_command(ph, "TOPIC+", HEXCHAT_PRI_NORM, handle_crypt_topic, usage_topic, NULL);
-    hexchat_hook_command(ph, "NOTICE+", HEXCHAT_PRI_NORM, handle_crypt_notice, usage_notice, NULL);
-    hexchat_hook_command(ph, "MSG+", HEXCHAT_PRI_NORM, handle_crypt_msg, usage_msg, NULL);
-    hexchat_hook_command(ph, "ME", HEXCHAT_PRI_NORM, handle_crypt_me, NULL, NULL);
+    zoitechat_hook_command(ph, "SETKEY", HEXCHAT_PRI_NORM, handle_setkey, usage_setkey, NULL);
+    zoitechat_hook_command(ph, "DELKEY", HEXCHAT_PRI_NORM, handle_delkey, usage_delkey, NULL);
+    zoitechat_hook_command(ph, "KEYX", HEXCHAT_PRI_NORM, handle_keyx, usage_keyx, NULL);
+    zoitechat_hook_command(ph, "TOPIC+", HEXCHAT_PRI_NORM, handle_crypt_topic, usage_topic, NULL);
+    zoitechat_hook_command(ph, "NOTICE+", HEXCHAT_PRI_NORM, handle_crypt_notice, usage_notice, NULL);
+    zoitechat_hook_command(ph, "MSG+", HEXCHAT_PRI_NORM, handle_crypt_msg, usage_msg, NULL);
+    zoitechat_hook_command(ph, "ME", HEXCHAT_PRI_NORM, handle_crypt_me, NULL, NULL);
 
     /* Add handlers */
-    hexchat_hook_command(ph, "", HEXCHAT_PRI_NORM, handle_outgoing, NULL, NULL);
-    hexchat_hook_server(ph, "NOTICE", HEXCHAT_PRI_HIGHEST, handle_keyx_notice, NULL);
-    hexchat_hook_server_attrs(ph, "NOTICE", HEXCHAT_PRI_NORM, handle_incoming, NULL);
-    hexchat_hook_server_attrs(ph, "PRIVMSG", HEXCHAT_PRI_NORM, handle_incoming, NULL);
-    /* hexchat_hook_server(ph, "RAW LINE", HEXCHAT_PRI_NORM, handle_debug, NULL); */
-    hexchat_hook_server_attrs(ph, "TOPIC", HEXCHAT_PRI_NORM, handle_incoming, NULL);
-    hexchat_hook_server_attrs(ph, "332", HEXCHAT_PRI_NORM, handle_incoming, NULL);
+    zoitechat_hook_command(ph, "", HEXCHAT_PRI_NORM, handle_outgoing, NULL, NULL);
+    zoitechat_hook_server(ph, "NOTICE", HEXCHAT_PRI_HIGHEST, handle_keyx_notice, NULL);
+    zoitechat_hook_server_attrs(ph, "NOTICE", HEXCHAT_PRI_NORM, handle_incoming, NULL);
+    zoitechat_hook_server_attrs(ph, "PRIVMSG", HEXCHAT_PRI_NORM, handle_incoming, NULL);
+    /* zoitechat_hook_server(ph, "RAW LINE", HEXCHAT_PRI_NORM, handle_debug, NULL); */
+    zoitechat_hook_server_attrs(ph, "TOPIC", HEXCHAT_PRI_NORM, handle_incoming, NULL);
+    zoitechat_hook_server_attrs(ph, "332", HEXCHAT_PRI_NORM, handle_incoming, NULL);
 
     if (!fish_init())
         return 0;
@@ -823,17 +823,17 @@ int hexchat_plugin_init(hexchat_plugin *plugin_handle,
 
     pending_exchanges = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 
-    hexchat_printf(ph, "%s plugin loaded\n", plugin_name);
+    zoitechat_printf(ph, "%s plugin loaded\n", plugin_name);
     /* Return success */
     return 1;
 }
 
-int hexchat_plugin_deinit(void) {
+int zoitechat_plugin_deinit(void) {
     g_clear_pointer(&pending_exchanges, g_hash_table_destroy);
     dh1080_deinit();
     fish_deinit();
 
-    hexchat_printf(ph, "%s plugin unloaded\n", plugin_name);
+    zoitechat_printf(ph, "%s plugin unloaded\n", plugin_name);
     return 1;
 }
 

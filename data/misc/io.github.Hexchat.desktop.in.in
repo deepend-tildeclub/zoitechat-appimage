@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=HexChat
+Name=ZoiteChat
 GenericName=IRC Client
 Comment=Chat with other people online
 Keywords=IM;Chat;
@@ -16,4 +16,4 @@ Actions=SafeMode;
 
 [Desktop Action SafeMode]
 Name=Open Safe Mode
-Exec=hexchat --no-auto --no-plugins
+Exec=zoitechat --no-auto --no-plugins

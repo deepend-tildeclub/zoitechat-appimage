@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -91,9 +91,9 @@ struct nbexec
 	struct session *sess;
 };
 
-struct hexchatprefs
+struct zoitechatprefs
 {
-	/* these are the rebranded, consistent, sorted hexchat variables */
+	/* these are the rebranded, consistent, sorted zoitechat variables */
 
 	/* BOOLEANS */
 	unsigned int hex_away_auto_unmark;
@@ -488,7 +488,7 @@ typedef struct server
 	int proxy_sok6;
 	int id;					/* unique ID number (for plugin API) */
 
-	/* dcc_ip moved from hexchatprefs to make it per-server */
+	/* dcc_ip moved from zoitechatprefs to make it per-server */
 	guint32 dcc_ip;
 
 #ifdef USE_OPENSSL

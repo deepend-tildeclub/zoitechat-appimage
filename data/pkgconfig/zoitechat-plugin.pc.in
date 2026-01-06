@@ -1,0 +1,9 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+includedir=@includedir@
+zoitechatlibdir=@zoitechatlibdir@
+
+Name: ZoiteChat plugins
+Description: Header and path for ZoiteChat plugins
+Version: @VERSION@
+Cflags: -I${includedir}

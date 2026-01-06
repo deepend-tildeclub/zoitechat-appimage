@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -21,134 +21,134 @@
 #define HEXCHAT_COMMONPLUGIN_H
 
 #ifdef PLUGIN_C
-struct _hexchat_plugin
+struct _zoitechat_plugin
 {
-	/* Keep these in sync with hexchat-plugin.h */
+	/* Keep these in sync with zoitechat-plugin.h */
 	/* !!don't change the order, to keep binary compat!! */
-	hexchat_hook *(*hexchat_hook_command) (hexchat_plugin *ph,
+	zoitechat_hook *(*zoitechat_hook_command) (zoitechat_plugin *ph,
 		    const char *name,
 		    int pri,
 		    int (*callback) (char *word[], char *word_eol[], void *user_data),
 		    const char *help_text,
 		    void *userdata);
-	hexchat_hook *(*hexchat_hook_server) (hexchat_plugin *ph,
+	zoitechat_hook *(*zoitechat_hook_server) (zoitechat_plugin *ph,
 		   const char *name,
 		   int pri,
 		   int (*callback) (char *word[], char *word_eol[], void *user_data),
 		   void *userdata);
-	hexchat_hook *(*hexchat_hook_print) (hexchat_plugin *ph,
+	zoitechat_hook *(*zoitechat_hook_print) (zoitechat_plugin *ph,
 		  const char *name,
 		  int pri,
 		  int (*callback) (char *word[], void *user_data),
 		  void *userdata);
-	hexchat_hook *(*hexchat_hook_timer) (hexchat_plugin *ph,
+	zoitechat_hook *(*zoitechat_hook_timer) (zoitechat_plugin *ph,
 		  int timeout,
 		  int (*callback) (void *user_data),
 		  void *userdata);
-	hexchat_hook *(*hexchat_hook_fd) (hexchat_plugin *ph,
+	zoitechat_hook *(*zoitechat_hook_fd) (zoitechat_plugin *ph,
 		   int fd,
 		   int flags,
 		   int (*callback) (int fd, int flags, void *user_data),
 		   void *userdata);
-	void *(*hexchat_unhook) (hexchat_plugin *ph,
-	      hexchat_hook *hook);
-	void (*hexchat_print) (hexchat_plugin *ph,
+	void *(*zoitechat_unhook) (zoitechat_plugin *ph,
+	      zoitechat_hook *hook);
+	void (*zoitechat_print) (zoitechat_plugin *ph,
 	     const char *text);
-	void (*hexchat_printf) (hexchat_plugin *ph,
+	void (*zoitechat_printf) (zoitechat_plugin *ph,
 	      const char *format, ...);
-	void (*hexchat_command) (hexchat_plugin *ph,
+	void (*zoitechat_command) (zoitechat_plugin *ph,
 	       const char *command);
-	void (*hexchat_commandf) (hexchat_plugin *ph,
+	void (*zoitechat_commandf) (zoitechat_plugin *ph,
 		const char *format, ...);
-	int (*hexchat_nickcmp) (hexchat_plugin *ph,
+	int (*zoitechat_nickcmp) (zoitechat_plugin *ph,
 	       const char *s1,
 	       const char *s2);
-	int (*hexchat_set_context) (hexchat_plugin *ph,
-		   hexchat_context *ctx);
-	hexchat_context *(*hexchat_find_context) (hexchat_plugin *ph,
+	int (*zoitechat_set_context) (zoitechat_plugin *ph,
+		   zoitechat_context *ctx);
+	zoitechat_context *(*zoitechat_find_context) (zoitechat_plugin *ph,
 		    const char *servname,
 		    const char *channel);
-	hexchat_context *(*hexchat_get_context) (hexchat_plugin *ph);
-	const char *(*hexchat_get_info) (hexchat_plugin *ph,
+	zoitechat_context *(*zoitechat_get_context) (zoitechat_plugin *ph);
+	const char *(*zoitechat_get_info) (zoitechat_plugin *ph,
 		const char *id);
-	int (*hexchat_get_prefs) (hexchat_plugin *ph,
+	int (*zoitechat_get_prefs) (zoitechat_plugin *ph,
 		 const char *name,
 		 const char **string,
 		 int *integer);
-	hexchat_list * (*hexchat_list_get) (hexchat_plugin *ph,
+	zoitechat_list * (*zoitechat_list_get) (zoitechat_plugin *ph,
 		const char *name);
-	void (*hexchat_list_free) (hexchat_plugin *ph,
-		 hexchat_list *xlist);
-	const char * const * (*hexchat_list_fields) (hexchat_plugin *ph,
+	void (*zoitechat_list_free) (zoitechat_plugin *ph,
+		 zoitechat_list *xlist);
+	const char * const * (*zoitechat_list_fields) (zoitechat_plugin *ph,
 		   const char *name);
-	int (*hexchat_list_next) (hexchat_plugin *ph,
-		 hexchat_list *xlist);
-	const char * (*hexchat_list_str) (hexchat_plugin *ph,
-		hexchat_list *xlist,
+	int (*zoitechat_list_next) (zoitechat_plugin *ph,
+		 zoitechat_list *xlist);
+	const char * (*zoitechat_list_str) (zoitechat_plugin *ph,
+		zoitechat_list *xlist,
 		const char *name);
-	int (*hexchat_list_int) (hexchat_plugin *ph,
-		hexchat_list *xlist,
+	int (*zoitechat_list_int) (zoitechat_plugin *ph,
+		zoitechat_list *xlist,
 		const char *name);
-	void * (*hexchat_plugingui_add) (hexchat_plugin *ph,
+	void * (*zoitechat_plugingui_add) (zoitechat_plugin *ph,
 		     const char *filename,
 		     const char *name,
 		     const char *desc,
 		     const char *version,
 		     char *reserved);
-	void (*hexchat_plugingui_remove) (hexchat_plugin *ph,
+	void (*zoitechat_plugingui_remove) (zoitechat_plugin *ph,
 			void *handle);
-	int (*hexchat_emit_print) (hexchat_plugin *ph,
+	int (*zoitechat_emit_print) (zoitechat_plugin *ph,
 			const char *event_name, ...);
-	void *(*hexchat_read_fd) (hexchat_plugin *ph);
-	time_t (*hexchat_list_time) (hexchat_plugin *ph,
-		hexchat_list *xlist,
+	void *(*zoitechat_read_fd) (zoitechat_plugin *ph);
+	time_t (*zoitechat_list_time) (zoitechat_plugin *ph,
+		zoitechat_list *xlist,
 		const char *name);
-	char *(*hexchat_gettext) (hexchat_plugin *ph,
+	char *(*zoitechat_gettext) (zoitechat_plugin *ph,
 		const char *msgid);
-	void (*hexchat_send_modes) (hexchat_plugin *ph,
+	void (*zoitechat_send_modes) (zoitechat_plugin *ph,
 		  const char **targets,
 		  int ntargets,
 		  int modes_per_line,
 		  char sign,
 		  char mode);
-	char *(*hexchat_strip) (hexchat_plugin *ph,
+	char *(*zoitechat_strip) (zoitechat_plugin *ph,
 	     const char *str,
 	     int len,
 	     int flags);
-	void (*hexchat_free) (hexchat_plugin *ph,
+	void (*zoitechat_free) (zoitechat_plugin *ph,
 	    void *ptr);
-	int (*hexchat_pluginpref_set_str) (hexchat_plugin *ph,
+	int (*zoitechat_pluginpref_set_str) (zoitechat_plugin *ph,
 		const char *var,
 		const char *value);
-	int (*hexchat_pluginpref_get_str) (hexchat_plugin *ph,
+	int (*zoitechat_pluginpref_get_str) (zoitechat_plugin *ph,
 		const char *var,
 		char *dest);
-	int (*hexchat_pluginpref_set_int) (hexchat_plugin *ph,
+	int (*zoitechat_pluginpref_set_int) (zoitechat_plugin *ph,
 		const char *var,
 		int value);
-	int (*hexchat_pluginpref_get_int) (hexchat_plugin *ph,
+	int (*zoitechat_pluginpref_get_int) (zoitechat_plugin *ph,
 		const char *var);
-	int (*hexchat_pluginpref_delete) (hexchat_plugin *ph,
+	int (*zoitechat_pluginpref_delete) (zoitechat_plugin *ph,
 		const char *var);
-	int (*hexchat_pluginpref_list) (hexchat_plugin *ph,
+	int (*zoitechat_pluginpref_list) (zoitechat_plugin *ph,
 		char *dest);
-	hexchat_hook *(*hexchat_hook_server_attrs) (hexchat_plugin *ph,
+	zoitechat_hook *(*zoitechat_hook_server_attrs) (zoitechat_plugin *ph,
 		   const char *name,
 		   int pri,
 		   int (*callback) (char *word[], char *word_eol[],
-							hexchat_event_attrs *attrs, void *user_data),
+							zoitechat_event_attrs *attrs, void *user_data),
 		   void *userdata);
-	hexchat_hook *(*hexchat_hook_print_attrs) (hexchat_plugin *ph,
+	zoitechat_hook *(*zoitechat_hook_print_attrs) (zoitechat_plugin *ph,
 		  const char *name,
 		  int pri,
-		  int (*callback) (char *word[], hexchat_event_attrs *attrs,
+		  int (*callback) (char *word[], zoitechat_event_attrs *attrs,
 						   void *user_data),
 		  void *userdata);
-	int (*hexchat_emit_print_attrs) (hexchat_plugin *ph, hexchat_event_attrs *attrs,
+	int (*zoitechat_emit_print_attrs) (zoitechat_plugin *ph, zoitechat_event_attrs *attrs,
 									 const char *event_name, ...);
-	hexchat_event_attrs *(*hexchat_event_attrs_create) (hexchat_plugin *ph);
-	void (*hexchat_event_attrs_free) (hexchat_plugin *ph,
-									  hexchat_event_attrs *attrs);
+	zoitechat_event_attrs *(*zoitechat_event_attrs_create) (zoitechat_plugin *ph);
+	void (*zoitechat_event_attrs_free) (zoitechat_plugin *ph,
+									  zoitechat_event_attrs *attrs);
 
 	/* PRIVATE FIELDS! */
 	void *handle;		/* from dlopen */
@@ -157,8 +157,8 @@ struct _hexchat_plugin
 	char *desc;
 	char *version;
 	session *context;
-	void *deinit_callback;	/* pointer to hexchat_plugin_deinit */
-	unsigned int fake:1;		/* fake plugin. Added by hexchat_plugingui_add() */
+	void *deinit_callback;	/* pointer to zoitechat_plugin_deinit */
+	unsigned int fake:1;		/* fake plugin. Added by zoitechat_plugingui_add() */
 	unsigned int free_strings:1;		/* free name,desc,version? */
 };
 #endif

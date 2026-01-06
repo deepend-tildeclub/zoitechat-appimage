@@ -30,14 +30,14 @@
 #include <unistd.h>
 #endif
 
-#include "hexchat.h"
+#include "zoitechat.h"
 #include "notify.h"
 #include "cfgfiles.h"
 #include "fe.h"
 #include "server.h"
 #include "text.h"
 #include "util.h"
-#include "hexchatc.h"
+#include "zoitechatc.h"
 
 
 GSList *notify_list = 0;
@@ -129,7 +129,7 @@ notify_save (void)
         GSList *list = g_slist_copy(notify_list);
         list = g_slist_reverse(list);
 
-	fh = hexchat_open_file ("notify.conf", O_TRUNC | O_WRONLY | O_CREAT, 0600, XOF_DOMODE);
+	fh = zoitechat_open_file ("notify.conf", O_TRUNC | O_WRONLY | O_CREAT, 0600, XOF_DOMODE);
 	if (fh != -1)
 	{
 		while (list)
@@ -156,7 +156,7 @@ notify_load (void)
 	char buf[256];
 	char *sep;
 
-	fh = hexchat_open_file ("notify.conf", O_RDONLY, 0, 0);
+	fh = zoitechat_open_file ("notify.conf", O_RDONLY, 0, 0);
 	if (fh != -1)
 	{
 		while (waitline (fh, buf, sizeof buf, FALSE) != -1)

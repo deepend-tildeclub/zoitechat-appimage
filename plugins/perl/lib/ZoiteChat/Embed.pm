@@ -1,4 +1,4 @@
-package HexChat::Embed;
+package ZoiteChat::Embed;
 use strict;
 use warnings;
 use Data::Dumper;
@@ -9,7 +9,7 @@ use Data::Dumper;
 #   filename
 #     The full path to the script.
 #   gui_entry
-#     This is hexchat_plugin pointer that is used to remove the script from
+#     This is zoitechat_plugin pointer that is used to remove the script from
 #     Plugins and Scripts window when a script is unloaded. This has also
 #     been converted with the PTR2IV() macro.
 #   hooks
@@ -43,11 +43,11 @@ sub load {
 	if( exists $scripts{$package} ) {
 		my $pkg_info = pkg_info( $package );
 		my $filename = File::Basename::basename( $pkg_info->{filename} );
-		HexChat::printf(
+		ZoiteChat::printf(
 			qq{'%s' already loaded from '%s'.\n},
 			$filename, $pkg_info->{filename}
 		);
-		HexChat::print(
+		ZoiteChat::print(
 			'If this is a different script then it rename and try '.
 			'loading it again.'
 		);
@@ -61,7 +61,7 @@ sub load {
 		$source =~ s/^__END__.*//ms;
 		
 		# this must come before the eval or the filename will not be found in
-		# HexChat::register
+		# ZoiteChat::register
 		$scripts{$package}{filename} = $file;
 		$scripts{$package}{loaded_at} = Time::HiRes::time();
 
@@ -94,7 +94,7 @@ sub load {
 				$error_message .= "   $conflict_package already defined in " .
 					pkg_info($owner_package{ $conflict_package })->{filename}."\n";
 			}
-			HexChat::print( $error_message );
+			ZoiteChat::print( $error_message );
 
 			return 2;
 		}
@@ -115,7 +115,7 @@ sub load {
 
 		unless( exists $scripts{$package}{gui_entry} ) {
 			$scripts{$package}{gui_entry} =
-				HexChat::Internal::register(
+				ZoiteChat::Internal::register(
 					"", "unknown", "", $file
 				);
 		}
@@ -123,13 +123,13 @@ sub load {
 		if( $@ ) {
 			# something went wrong
 			$@ =~ s/\(eval \d+\)/$file/g;
-			HexChat::print( "Error loading '$file':\n$@\n" );
+			ZoiteChat::print( "Error loading '$file':\n$@\n" );
 			# make sure the script list doesn't contain false information
 			unload( $scripts{$package}{filename} );
 			return 1;
 		}
 	} else {
-		HexChat::print( "Error opening '$file': $!\n" );
+		ZoiteChat::print( "Error opening '$file': $!\n" );
 		return 2;
 	}
 
@@ -163,7 +163,7 @@ sub unload {
 
 		if( exists $pkg_info->{hooks} ) {
 			for my $hook ( @{$pkg_info->{hooks}} ) {
-				HexChat::unhook( $hook, $package );
+				ZoiteChat::unhook( $hook, $package );
 			}
 		}
 
@@ -177,10 +177,10 @@ sub unload {
 		}
 		Symbol::delete_package( $package );
 		delete $scripts{$package};
-		return HexChat::EAT_ALL;
+		return ZoiteChat::EAT_ALL;
 	} else {
-		HexChat::print( qq{"$file" is not loaded.\n} );
-		return HexChat::EAT_NONE;
+		ZoiteChat::print( qq{"$file" is not loaded.\n} );
+		return ZoiteChat::EAT_NONE;
 	}
 }
 
@@ -189,7 +189,7 @@ sub unload_all {
 		unload( $scripts{$package}->{filename} );
 	}
 	
-	return HexChat::EAT_ALL;
+	return ZoiteChat::EAT_ALL;
 }
 
 sub reload {
@@ -204,11 +204,11 @@ sub reload {
 	}
 	
 	load( $fullpath );
-	return HexChat::EAT_ALL;
+	return ZoiteChat::EAT_ALL;
 }
 
 sub reload_all {
-	my @dirs = HexChat::get_info( "configdir" );
+	my @dirs = ZoiteChat::get_info( "configdir" );
 	push @dirs, File::Spec->catdir( $dirs[0], "plugins" );
 	for my $dir ( @dirs ) {
 		my $auto_load_glob = File::Spec->catfile( $dir, "*.pl" );
@@ -232,22 +232,22 @@ sub evaluate {
 	my ($code) = @_;
 
 	my @results = eval $code;
-	HexChat::print $@ if $@; #print warnings
+	ZoiteChat::print $@ if $@; #print warnings
 
 	local $Data::Dumper::Sortkeys = 1;
 	local $Data::Dumper::Terse    = 1;
 
 	if (@results > 1) {
-		HexChat::print Dumper \@results;
+		ZoiteChat::print Dumper \@results;
 	}
 	elsif (ref $results[0] || !$results[0]) {
-		HexChat::print Dumper $results[0];
+		ZoiteChat::print Dumper $results[0];
 	}
 	else {
-		HexChat::print $results[0];
+		ZoiteChat::print $results[0];
 	}
 
-	return HexChat::EAT_HEXCHAT;
+	return ZoiteChat::EAT_HEXCHAT;
 };
 
 sub expand_homedir {
@@ -267,7 +267,7 @@ sub file2pkg {
 	my $string = File::Basename::basename( shift @_ );
 	$string =~ s/\.pl$//i;
 	$string =~ s|([^A-Za-z0-9/])|'_'.unpack("H*",$1)|eg;
-	return "HexChat::Script::" . $string;
+	return "ZoiteChat::Script::" . $string;
 }
 
 sub pkg_info {
@@ -279,7 +279,7 @@ sub find_external_pkg {
 	my $level = 1;
 
 	while( my @frame = caller( $level ) ) {
-		return @frame if $frame[0] !~ /(?:^IRC$|^HexChat)/;
+		return @frame if $frame[0] !~ /(?:^IRC$|^ZoiteChat)/;
 		$level++;
 	}
 	return;
@@ -289,7 +289,7 @@ sub find_pkg {
 	my $level = 1;
 
 	while( my ($package, $file, $line) = caller( $level ) ) {
-		return $package if $package =~ /^HexChat::Script::/;
+		return $package if $package =~ /^ZoiteChat::Script::/;
 		$level++;
 	}
 

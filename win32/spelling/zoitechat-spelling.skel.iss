@@ -1,15 +1,15 @@
-AppName=HexChat Spelling Dictionaries
-AppVerName=HexChat Spelling Dictionaries r1
+AppName=ZoiteChat Spelling Dictionaries
+AppVerName=ZoiteChat Spelling Dictionaries r1
 AppVersion=1.0
 VersionInfoVersion=1.0
-OutputBaseFilename=HexChat Spelling Dictionaries r1
-AppPublisher=HexChat
-AppPublisherURL=http://www.hexchat.org/
+OutputBaseFilename=ZoiteChat Spelling Dictionaries r1
+AppPublisher=ZoiteChat
+AppPublisherURL=http://www.zoitechat.org/
 AppCopyright=Copyright (C) 1998-2010 Peter Zelezny
-AppSupportURL=https://github.com/hexchat/hexchat/issues
-AppUpdatesURL=http://www.hexchat.org/home/downloads
+AppSupportURL=https://github.com/zoitechat/zoitechat/issues
+AppUpdatesURL=http://www.zoitechat.org/home/downloads
 DefaultDirName={localappdata}\enchant
-DefaultGroupName=HexChat
+DefaultGroupName=ZoiteChat
 DisableProgramGroupPage=yes
 DisableDirPage=yes
 SolidCompression=yes
@@ -28,4 +28,4 @@ ArchitecturesAllowed=x86 x64
 Source: "myspell\*"; DestDir: "{app}\myspell"; Flags: createallsubdirs recursesubdirs
 
 [Messages]
-BeveledLabel= HexChat
+BeveledLabel= ZoiteChat

@@ -1,4 +1,4 @@
-hexchat-theme-manager
+zoitechat-theme-manager
 ------------------
 
 - Shows previews of and can load/save themes

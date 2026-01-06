@@ -40,12 +40,12 @@
 #include <unistd.h>
 #endif
 
-#include "hexchat.h"
+#include "zoitechat.h"
 #include "fe.h"
 #include "cfgfiles.h"
 #include "network.h"
 #include "notify.h"
-#include "hexchatc.h"
+#include "zoitechatc.h"
 #include "inbound.h"
 #include "outbound.h"
 #include "text.h"

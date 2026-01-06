@@ -1,30 +1,30 @@
-#define APPNAM "HexChat"
+#define APPNAM "ZoiteChat"
 #define APPVER "<#= [string]::Join('.', $versionParts) #>"
 ; These are defined by our installer project at build time
 ;#define APPARCH "x64"
-;#define PROJECTDIR "C:\...\hexchat\win32\installer\"
+;#define PROJECTDIR "C:\...\zoitechat\win32\installer\"
 
 ;http://mitrich.net23.net/?/inno-download-plugin.html
 #include <idp.iss>
 
 [Setup]
-AppName=HexChat
+AppName=ZoiteChat
 AppVersion={#APPVER}
-AppVerName=HexChat {#APPVER}
-AppPublisher=HexChat
-AppPublisherURL=http://hexchat.github.io
+AppVerName=ZoiteChat {#APPVER}
+AppPublisher=ZoiteChat
+AppPublisherURL=http://zoitechat.github.io
 AppCopyright=Copyright (C) 1998-2010 Peter Zelezny
-AppSupportURL=https://github.com/hexchat/hexchat/issues
-AppUpdatesURL=http://hexchat.github.io/downloads.html
-LicenseFile=share\doc\hexchat\COPYING
-UninstallDisplayIcon={app}\hexchat.exe
-UninstallDisplayName=HexChat
+AppSupportURL=https://github.com/zoitechat/zoitechat/issues
+AppUpdatesURL=http://zoitechat.github.io/downloads.html
+LicenseFile=share\doc\zoitechat\COPYING
+UninstallDisplayIcon={app}\zoitechat.exe
+UninstallDisplayName=ZoiteChat
 #if APPARCH == "x64"
-DefaultDirName={pf64}\HexChat
+DefaultDirName={pf64}\ZoiteChat
 #else
-DefaultDirName={pf32}\HexChat
+DefaultDirName={pf32}\ZoiteChat
 #endif
-DefaultGroupName=HexChat
+DefaultGroupName=ZoiteChat
 AllowNoIcons=yes
 SolidCompression=yes
 Compression=lzma2/ultra64
@@ -49,7 +49,7 @@ ArchitecturesAllowed=x86 x64
 MinVersion=6.1
 WizardImageFile={#PROJECTDIR}wizardimage.bmp
 WizardSmallImageFile={#PROJECTDIR}wizardsmallimage.bmp
-SetupIconFile={#PROJECTDIR}..\..\data\icons\hexchat.ico
+SetupIconFile={#PROJECTDIR}..\..\data\icons\zoitechat.ico
 
 [Types]
 Name: "normal"; Description: "Normal Installation"
@@ -57,9 +57,9 @@ Name: "minimal"; Description: "Minimal Installation"
 Name: "custom"; Description: "Custom Installation"; Flags: iscustom
 
 [Components]
-Name: "libs"; Description: "HexChat"; Types: normal minimal custom; Flags: fixed
-Name: "xctext"; Description: "HexChat-Text"; Types: custom; Flags: disablenouninstallwarning
-Name: "xtm"; Description: "HexChat Theme Manager"; Types: normal custom; Flags: disablenouninstallwarning
+Name: "libs"; Description: "ZoiteChat"; Types: normal minimal custom; Flags: fixed
+Name: "xctext"; Description: "ZoiteChat-Text"; Types: custom; Flags: disablenouninstallwarning
+Name: "xtm"; Description: "ZoiteChat Theme Manager"; Types: normal custom; Flags: disablenouninstallwarning
 Name: "icons"; Description: "Create Shortcuts"; Types: custom; Flags: disablenouninstallwarning
 Name: "icons\desktopicon"; Description: "Create Desktop Shortcut"; Types: custom; Flags: disablenouninstallwarning
 Name: "icons\quicklaunchicon"; Description: "Create Quick Launch Shortcut"; Types: custom; Flags: disablenouninstallwarning
@@ -84,20 +84,20 @@ Name: portable; Description: "Yes"; GroupDescription: "Portable Mode: Stores con
 Root: HKCR; Subkey: "irc"; ValueType: none; ValueName: ""; ValueData: ""; Flags: deletekey uninsdeletekey; Tasks: not portable
 Root: HKCR; Subkey: "irc"; ValueType: string; ValueName: ""; ValueData: "URL:IRC Protocol"; Flags: uninsdeletevalue; Tasks: not portable
 Root: HKCR; Subkey: "irc"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""; Flags: uninsdeletevalue; Tasks: not portable
-Root: HKCR; Subkey: "irc\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\hexchat.exe,0"; Flags: uninsdeletevalue; Tasks: not portable
+Root: HKCR; Subkey: "irc\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\zoitechat.exe,0"; Flags: uninsdeletevalue; Tasks: not portable
 Root: HKCR; Subkey: "irc\shell"; ValueType: string; ValueName: ""; ValueData: "open"; Flags: uninsdeletevalue; Tasks: not portable
-Root: HKCR; Subkey: "irc\shell\open\command"; ValueType: string; ValueName: ""; ValueData: "{app}\hexchat.exe --url=""%1"""; Flags: uninsdeletevalue; Tasks: not portable
+Root: HKCR; Subkey: "irc\shell\open\command"; ValueType: string; ValueName: ""; ValueData: "{app}\zoitechat.exe --url=""%1"""; Flags: uninsdeletevalue; Tasks: not portable
 
 Root: HKCR; Subkey: ".hct"; ValueType: none; ValueName: ""; ValueData: ""; Flags: deletekey uninsdeletekey; Components:xtm; Tasks: not portable
-Root: HKCR; Subkey: ".hct"; ValueType: string; ValueName: ""; ValueData: "HexChat Theme File"; Flags: uninsdeletevalue; Components:xtm; Tasks: not portable
-Root: HKCR; Subkey: ".hct"; ValueType: string; ValueName: "HexChat Theme File"; ValueData: ""; Flags: uninsdeletevalue; Components:xtm; Tasks: not portable
+Root: HKCR; Subkey: ".hct"; ValueType: string; ValueName: ""; ValueData: "ZoiteChat Theme File"; Flags: uninsdeletevalue; Components:xtm; Tasks: not portable
+Root: HKCR; Subkey: ".hct"; ValueType: string; ValueName: "ZoiteChat Theme File"; ValueData: ""; Flags: uninsdeletevalue; Components:xtm; Tasks: not portable
 Root: HKCR; Subkey: ".hct\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\thememan.exe,0"; Flags: uninsdeletevalue; Components:xtm; Tasks: not portable
 Root: HKCR; Subkey: ".hct\shell"; ValueType: string; ValueName: ""; ValueData: "open"; Flags: uninsdeletevalue; Components:xtm; Tasks: not portable
 Root: HKCR; Subkey: ".hct\shell\open\command"; ValueType: string; ValueName: ""; ValueData: "{app}\thememan.exe ""%1"""; Flags: uninsdeletevalue; Components:xtm; Tasks: not portable
 
 [Run]
-Filename: "{app}\hexchat.exe"; Description: "Run HexChat after closing the Wizard"; Flags: nowait postinstall skipifsilent
-Filename: "http://docs.hexchat.org/en/latest/changelog.html"; Description: "See what's changed"; Flags: shellexec runasoriginaluser postinstall skipifsilent unchecked
+Filename: "{app}\zoitechat.exe"; Description: "Run ZoiteChat after closing the Wizard"; Flags: nowait postinstall skipifsilent
+Filename: "http://docs.zoitechat.org/en/latest/changelog.html"; Description: "See what's changed"; Flags: shellexec runasoriginaluser postinstall skipifsilent unchecked
 Filename: "{tmp}\vcredist.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: "Installing Visual C++ Redistributable"; Flags: skipifdoesntexist; Tasks: not portable
 Filename: "{tmp}\vcredist2013.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: "Installing Visual C++ Redistributable"; Flags: skipifdoesntexist; Tasks: not portable
 Filename: "{tmp}\dotnet4.exe"; Parameters: "/q /norestart"; StatusMsg: "Installing .NET"; Components: xtm; Flags: skipifdoesntexist; Tasks: not portable
@@ -189,21 +189,21 @@ Source: "python\*.py"; DestDir: "{app}\python"; Flags: ignoreversion; Components
 Source: "plugins\hcpython3.dll"; DestDir: "{app}\plugins"; Flags: ignoreversion; Components: langs\python
 Source: "_cffi_backend.cp3*.pyd"; DestDir: "{app}"; Flags: ignoreversion; Components: langs\python
 
-Source: "hexchat.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: libs
-Source: "hexchat-text.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: xctext
+Source: "zoitechat.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: libs
+Source: "zoitechat-text.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: xctext
 Source: "thememan.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: xtm
 
 [Icons]
-Name: "{group}\HexChat"; Filename: "{app}\hexchat.exe"; AppUserModelID: "HexChat.Desktop.Notify"; Tasks: not portable; Check: not WizardNoIcons
-Name: "{group}\HexChat Safe Mode"; Filename: "{app}\hexchat.exe"; Parameters: "--no-auto --no-plugins"; Tasks: not portable; Check: not WizardNoIcons
-Name: "{group}\HexChat ChangeLog"; Filename: "{app}\changelog.url"; IconFilename: "{sys}\shell32.dll"; IconIndex: 165; Tasks: not portable; Check: not WizardNoIcons
-Name: "{group}\HexChat ReadMe"; Filename: "{app}\readme.url"; IconFilename: "{sys}\shell32.dll"; IconIndex: 23; Tasks: not portable; Check: not WizardNoIcons
-Name: "{group}\HexChat Config Folder"; Filename: "%APPDATA%\HexChat\"; Tasks: not portable; Check: not WizardNoIcons
-Name: "{group}\HexChat-Text"; Filename: "{app}\hexchat-text.exe"; Components: xctext; Tasks: not portable; Check: not WizardNoIcons
-Name: "{group}\HexChat Theme Manager"; Filename: "{app}\thememan.exe"; Components: xtm; Tasks: not portable; Check: not WizardNoIcons
-Name: "{group}\Uninstall HexChat"; Filename: "{uninstallexe}"; Tasks: not portable; Check: not WizardNoIcons
-Name: "{commondesktop}\HexChat"; Filename: "{app}\hexchat.exe"; AppUserModelID: "HexChat.Desktop.Notify"; Components: icons\desktopicon; Tasks: not portable
-Name: "{commonappdata}\Microsoft\Internet Explorer\Quick Launch\HexChat"; Filename: "{app}\hexchat.exe"; Components: icons\quicklaunchicon; Tasks: not portable
+Name: "{group}\ZoiteChat"; Filename: "{app}\zoitechat.exe"; AppUserModelID: "ZoiteChat.Desktop.Notify"; Tasks: not portable; Check: not WizardNoIcons
+Name: "{group}\ZoiteChat Safe Mode"; Filename: "{app}\zoitechat.exe"; Parameters: "--no-auto --no-plugins"; Tasks: not portable; Check: not WizardNoIcons
+Name: "{group}\ZoiteChat ChangeLog"; Filename: "{app}\changelog.url"; IconFilename: "{sys}\shell32.dll"; IconIndex: 165; Tasks: not portable; Check: not WizardNoIcons
+Name: "{group}\ZoiteChat ReadMe"; Filename: "{app}\readme.url"; IconFilename: "{sys}\shell32.dll"; IconIndex: 23; Tasks: not portable; Check: not WizardNoIcons
+Name: "{group}\ZoiteChat Config Folder"; Filename: "%APPDATA%\ZoiteChat\"; Tasks: not portable; Check: not WizardNoIcons
+Name: "{group}\ZoiteChat-Text"; Filename: "{app}\zoitechat-text.exe"; Components: xctext; Tasks: not portable; Check: not WizardNoIcons
+Name: "{group}\ZoiteChat Theme Manager"; Filename: "{app}\thememan.exe"; Components: xtm; Tasks: not portable; Check: not WizardNoIcons
+Name: "{group}\Uninstall ZoiteChat"; Filename: "{uninstallexe}"; Tasks: not portable; Check: not WizardNoIcons
+Name: "{commondesktop}\ZoiteChat"; Filename: "{app}\zoitechat.exe"; AppUserModelID: "ZoiteChat.Desktop.Notify"; Components: icons\desktopicon; Tasks: not portable
+Name: "{commonappdata}\Microsoft\Internet Explorer\Quick Launch\ZoiteChat"; Filename: "{app}\zoitechat.exe"; Components: icons\quicklaunchicon; Tasks: not portable
 
 [Messages]
 BeveledLabel= {#APPNAM}
@@ -295,18 +295,18 @@ begin
 	begin
 
 #if APPARCH == "x64"
-		REDIST := 'https://github.com/hexchat/gvsbuild/releases/download/hexchat-2.16.2/vcredist_2015_x64.exe';
-		REDIST_2013 := 'https://github.com/hexchat/gvsbuild/releases/download/hexchat-2.16.2/vcredist_2013_x64.exe';
-		PERL := 'https://github.com/hexchat/gvsbuild/releases/download/hexchat-2.16.2/Perl.5.20.0.x64.msi';
+		REDIST := 'https://github.com/zoitechat/gvsbuild/releases/download/zoitechat-2.16.2/vcredist_2015_x64.exe';
+		REDIST_2013 := 'https://github.com/zoitechat/gvsbuild/releases/download/zoitechat-2.16.2/vcredist_2013_x64.exe';
+		PERL := 'https://github.com/zoitechat/gvsbuild/releases/download/zoitechat-2.16.2/Perl.5.20.0.x64.msi';
 		PY3 := 'https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe';
 #else
-		REDIST := 'https://github.com/hexchat/gvsbuild/releases/download/hexchat-2.16.2/vcredist_2015_x86.exe';
-		REDIST_2013 := 'https://github.com/hexchat/gvsbuild/releases/download/hexchat-2.16.2/vcredist_2013_x86.exe';
-		PERL := 'https://github.com/hexchat/gvsbuild/releases/download/hexchat-2.16.2/Perl.5.20.0.x86.msi';
+		REDIST := 'https://github.com/zoitechat/gvsbuild/releases/download/zoitechat-2.16.2/vcredist_2015_x86.exe';
+		REDIST_2013 := 'https://github.com/zoitechat/gvsbuild/releases/download/zoitechat-2.16.2/vcredist_2013_x86.exe';
+		PERL := 'https://github.com/zoitechat/gvsbuild/releases/download/zoitechat-2.16.2/Perl.5.20.0.x86.msi';
 		PY3 := 'https://www.python.org/ftp/python/3.8.10/python-3.8.10.exe';
 #endif
-		DOTNET := 'https://github.com/hexchat/gvsbuild/releases/download/hexchat-2.16.2/dotnet_40.exe';
-		SPELL := 'https://github.com/hexchat/gvsbuild/releases/download/hexchat-2.16.2/HexChat.Spelling.Dictionaries.r2.exe';
+		DOTNET := 'https://github.com/zoitechat/gvsbuild/releases/download/zoitechat-2.16.2/dotnet_40.exe';
+		SPELL := 'https://github.com/zoitechat/gvsbuild/releases/download/zoitechat-2.16.2/ZoiteChat.Spelling.Dictionaries.r2.exe';
 
 		if not CheckVCInstall() then
 			idpAddFile(REDIST, ExpandConstant('{tmp}\vcredist.exe'));
@@ -342,9 +342,9 @@ begin
 	if (CurPageID = wpSelectTasks) then
 		if (WizardForm.TasksList.Checked[1] = True) then
 #if APPARCH == "x64"
-			if (WizardDirValue() = ExpandConstant('{pf64}\HexChat')) then
+			if (WizardDirValue() = ExpandConstant('{pf64}\ZoiteChat')) then
 #else
-			if (WizardDirValue() = ExpandConstant('{pf32}\HexChat')) then
+			if (WizardDirValue() = ExpandConstant('{pf32}\ZoiteChat')) then
 #endif
 			begin
 				WizardForm.TasksList.Checked[1] := False
@@ -363,15 +363,15 @@ var
 	sUnInstallString: String;
 begin
 #if APPARCH == "x64"
-	sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\HexChat (x64)_is1');
+	sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\ZoiteChat (x64)_is1');
 #else
-	sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\HexChat (x86)_is1');
+	sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\ZoiteChat (x86)_is1');
 #endif
 	sUnInstallString := '';
 	if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstallString) then
 		RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
 	if not (sUnInstallString <> '') then
-		sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\HexChat_is1');
+		sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\ZoiteChat_is1');
 				if not RegQueryStringValue(HKLM32, sUnInstPath, 'UninstallString', sUnInstallString) then
 					if not RegQueryStringValue(HKCU32, sUnInstPath, 'UninstallString', sUnInstallString) then
 						if IsWin64 then

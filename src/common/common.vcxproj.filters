@@ -77,10 +77,10 @@
     <ClInclude Include="text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(HexChatLib)textenums.h">
+    <ClInclude Include="$(ZoiteChatLib)textenums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(HexChatLib)textevents.h">
+    <ClInclude Include="$(ZoiteChatLib)textevents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tree.h">
@@ -95,22 +95,22 @@
     <ClInclude Include="util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hexchat.h">
+    <ClInclude Include="zoitechat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hexchatc.h">
+    <ClInclude Include="zoitechatc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hexchat-plugin.h">
+    <ClInclude Include="zoitechat-plugin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(HexChatLib)config.h">
+    <ClInclude Include="$(ZoiteChatLib)config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="typedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(HexChatLib)marshal.h">
+    <ClInclude Include="$(ZoiteChatLib)marshal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="plugin-identd.h">
@@ -187,10 +187,10 @@
     <ClCompile Include="util.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hexchat.c">
+    <ClCompile Include="zoitechat.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(HexChatLib)marshal.c">
+    <ClCompile Include="$(ZoiteChatLib)marshal.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="plugin-identd.c">

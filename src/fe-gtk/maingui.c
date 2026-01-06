@@ -23,10 +23,10 @@
 
 #include <gdk/gdkkeysyms.h>
 
-#include "../common/hexchat.h"
+#include "../common/zoitechat.h"
 #include "../common/fe.h"
 #include "../common/server.h"
-#include "../common/hexchatc.h"
+#include "../common/zoitechatc.h"
 #include "../common/outbound.h"
 #include "../common/inbound.h"
 #include "../common/plugin.h"
@@ -996,7 +996,7 @@ static void
 mg_topdestroy_cb (GtkWidget *win, session *sess)
 {
 /*	printf("enter mg_topdestroy. sess %p was destroyed\n", sess);*/
-	session_free (sess);	/* tell hexchat.c about it */
+	session_free (sess);	/* tell zoitechat.c about it */
 }
 
 /* cleanup an IRC tab */
@@ -1006,7 +1006,7 @@ mg_ircdestroy (session *sess)
 {
 	GSList *list;
 
-	session_free (sess);	/* tell hexchat.c about it */
+	session_free (sess);	/* tell zoitechat.c about it */
 
 	if (mg_gui == NULL)
 	{
@@ -1176,13 +1176,13 @@ mg_open_quit_dialog (gboolean minimize_button)
 	cons = mg_count_networks ();
 	if (dccs + cons == 0 || !prefs.hex_gui_quit_dialog)
 	{
-		hexchat_exit ();
+		zoitechat_exit ();
 		return;
 	}
 
 	dialog = gtk_dialog_new ();
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
-	gtk_window_set_title (GTK_WINDOW (dialog), _("Quit HexChat?"));
+	gtk_window_set_title (GTK_WINDOW (dialog), _("Quit ZoiteChat?"));
 	gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (parent_window));
 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
 
@@ -1252,7 +1252,7 @@ mg_open_quit_dialog (gboolean minimize_button)
 	case 0:
 		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton1)))
 			prefs.hex_gui_quit_dialog = 0;
-		hexchat_exit ();
+		zoitechat_exit ();
 		break;
 	case 1: /* minimize to tray */
 		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton1)))
@@ -1785,7 +1785,7 @@ mg_tabwindow_kill_cb (GtkWidget *win, gpointer userdata)
 	session *sess;
 
 /*	puts("enter mg_tabwindow_kill_cb");*/
-	hexchat_is_quitting = TRUE;
+	zoitechat_is_quitting = TRUE;
 
 	/* see if there's any non-tab windows left */
 	list = sess_list;
@@ -1795,7 +1795,7 @@ mg_tabwindow_kill_cb (GtkWidget *win, gpointer userdata)
 		next = list->next;
 		if (!sess->gui->is_tab)
 		{
-			hexchat_is_quitting = FALSE;
+			zoitechat_is_quitting = FALSE;
 /*			puts("-> will not exit, some toplevel windows left");*/
 		} else
 		{
@@ -1851,7 +1851,7 @@ mg_link_irctab (session *sess, int focus)
 		win = mg_changui_destroy (sess);
 		mg_changui_new (sess, sess->res, 0, focus);
 		mg_populate (sess);
-		hexchat_is_quitting = FALSE;
+		zoitechat_is_quitting = FALSE;
 		if (win)
 			gtk_widget_destroy (win);
 		return;
@@ -2078,7 +2078,7 @@ mg_create_chanmodebuttons (session_gui *gui, GtkWidget *box)
 
 	gui->flag_k = mg_create_flagbutton (_("Keyword"), box, "k");
 	gui->key_entry = gtk_entry_new ();
-	gtk_widget_set_name (gui->key_entry, "hexchat-inputbox");
+	gtk_widget_set_name (gui->key_entry, "zoitechat-inputbox");
 	gtk_entry_set_max_length (GTK_ENTRY (gui->key_entry), 23);
 	gtk_widget_set_size_request (gui->key_entry, 115, -1);
 	gtk_box_pack_start (GTK_BOX (box), gui->key_entry, 0, 0, 0);
@@ -2090,7 +2090,7 @@ mg_create_chanmodebuttons (session_gui *gui, GtkWidget *box)
 
 	gui->flag_l = mg_create_flagbutton (_("User Limit"), box, "l");
 	gui->limit_entry = gtk_entry_new ();
-	gtk_widget_set_name (gui->limit_entry, "hexchat-inputbox");
+	gtk_widget_set_name (gui->limit_entry, "zoitechat-inputbox");
 	gtk_entry_set_max_length (GTK_ENTRY (gui->limit_entry), 10);
 	gtk_widget_set_size_request (gui->limit_entry, 30, -1);
 	gtk_box_pack_start (GTK_BOX (box), gui->limit_entry, 0, 0, 0);
@@ -2180,7 +2180,7 @@ mg_create_topicbar (session *sess, GtkWidget *box)
 		sess->res->tab = NULL;
 
 	gui->topic_entry = topic = sexy_spell_entry_new ();
-	gtk_widget_set_name (topic, "hexchat-inputbox");
+	gtk_widget_set_name (topic, "zoitechat-inputbox");
 	sexy_spell_entry_set_checked (SEXY_SPELL_ENTRY (topic), FALSE);
 	gtk_container_add (GTK_CONTAINER (hbox), topic);
 	g_signal_connect (G_OBJECT (topic), "activate",
@@ -2991,7 +2991,7 @@ mg_create_entry (session *sess, GtkWidget *box)
 							G_CALLBACK (mg_inputbox_cb), gui);
 	gtk_container_add (GTK_CONTAINER (hbox), entry);
 
-	gtk_widget_set_name (entry, "hexchat-inputbox");
+	gtk_widget_set_name (entry, "zoitechat-inputbox");
 	g_signal_connect (G_OBJECT (entry), "key_press_event",
 							G_CALLBACK (key_handle_key_press), NULL);
 	g_signal_connect (G_OBJECT (entry), "focus_in_event",
@@ -3130,10 +3130,10 @@ mg_create_topwindow (session *sess)
 	GtkWidget *table;
 
 	if (sess->type == SESS_DIALOG)
-		win = gtkutil_window_new ("HexChat", NULL,
+		win = gtkutil_window_new ("ZoiteChat", NULL,
 										  prefs.hex_gui_dialog_width, prefs.hex_gui_dialog_height, 0);
 	else
-		win = gtkutil_window_new ("HexChat", NULL,
+		win = gtkutil_window_new ("ZoiteChat", NULL,
 										  prefs.hex_gui_win_width,
 										  prefs.hex_gui_win_height, 0);
 	sess->gui->window = win;
@@ -3253,7 +3253,7 @@ mg_create_tabwindow (session *sess)
 	GdkWindow *parent_win;
 #endif
 
-	win = gtkutil_window_new ("HexChat", NULL, prefs.hex_gui_win_width,
+	win = gtkutil_window_new ("ZoiteChat", NULL, prefs.hex_gui_win_width,
 									  prefs.hex_gui_win_height, 0);
 	sess->gui->window = win;
 	gtk_window_move (GTK_WINDOW (win), prefs.hex_gui_win_left,

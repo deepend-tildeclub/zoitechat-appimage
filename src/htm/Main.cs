@@ -1,5 +1,5 @@
 /**
- * HexChat Theme Manager
+ * ZoiteChat Theme Manager
  *
  * Copyright (C) 2012 Patrick Griffs
  * Copyright (C) 2012 Berke Viktor
@@ -37,7 +37,7 @@ namespace thememan
 {
     public partial class HTM : Form
     {
-        public string hexchatdir;
+        public string zoitechatdir;
         public string themedir;
 
         OpenFileDialog importDialog;
@@ -62,11 +62,11 @@ namespace thememan
 
             if (RunningOnWindows() && IsPortable(out portableDir))
             {
-                hexchatdir = Path.Combine(portableDir, "config\\");
+                zoitechatdir = Path.Combine(portableDir, "config\\");
 
-                if (!Directory.Exists(hexchatdir))
+                if (!Directory.Exists(zoitechatdir))
                 {
-                    MessageBox.Show("HexChat installation not found!\nCheck your .\\config folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("ZoiteChat installation not found!\nCheck your .\\config folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Environment.Exit(1);
                 }
             }
@@ -75,26 +75,26 @@ namespace thememan
                 /* Environment.SpecialFolder.ApplicationData
                  * Windows: %APPDATA%
                  * Unix: ~/.config
-                 * Windows is case-insensitive so 'hexchat' should be fine for both
+                 * Windows is case-insensitive so 'zoitechat' should be fine for both
                  */
-                hexchatdir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "hexchat");
+                zoitechatdir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "zoitechat");
 
-                if (!Directory.Exists(hexchatdir))
+                if (!Directory.Exists(zoitechatdir))
                 {
                     if (RunningOnWindows())
                     {
-                        MessageBox.Show("HexChat installation not found!\nCheck your %APPDATA%\\HexChat folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);    
+                        MessageBox.Show("ZoiteChat installation not found!\nCheck your %APPDATA%\\ZoiteChat folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);    
                     }
                     else
                     {
-                        MessageBox.Show("HexChat installation not found!\nCheck your ~/.config/hexchat folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("ZoiteChat installation not found!\nCheck your ~/.config/zoitechat folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     
                     Environment.Exit(1);
                 }
             }
 
-            themedir = Path.Combine(hexchatdir, "themes");
+            themedir = Path.Combine(zoitechatdir, "themes");
             ListThemes();
 
             String[] arguments = Environment.GetCommandLineArgs();
@@ -196,17 +196,17 @@ namespace thememan
 
         private void applybutton_Click_1(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("HexChat must be closed and this will overwrite your current theme!\n\nDo you wish to continue?", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+            DialogResult result = MessageBox.Show("ZoiteChat must be closed and this will overwrite your current theme!\n\nDo you wish to continue?", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
             if (result == DialogResult.OK)
             {
-                File.Copy(Path.Combine(themedir, themelist.SelectedItem.ToString(), "colors.conf"), Path.Combine(hexchatdir, "colors.conf"), true);
+                File.Copy(Path.Combine(themedir, themelist.SelectedItem.ToString(), "colors.conf"), Path.Combine(zoitechatdir, "colors.conf"), true);
                 if (File.Exists(Path.Combine(themedir, themelist.SelectedItem.ToString(), "pevents.conf")))
                 {
-                    File.Copy(Path.Combine(themedir, themelist.SelectedItem.ToString(), "pevents.conf"), Path.Combine(hexchatdir, "pevents.conf"), true);
+                    File.Copy(Path.Combine(themedir, themelist.SelectedItem.ToString(), "pevents.conf"), Path.Combine(zoitechatdir, "pevents.conf"), true);
                 }
-                else if (File.Exists(Path.Combine(hexchatdir, "pevents.conf")))
+                else if (File.Exists(Path.Combine(zoitechatdir, "pevents.conf")))
                 {
-                    File.Delete(Path.Combine(hexchatdir, "pevents.conf"));
+                    File.Delete(Path.Combine(zoitechatdir, "pevents.conf"));
                 }
             }
         }
@@ -224,7 +224,7 @@ namespace thememan
         private void importbutton_Click_1(object sender, EventArgs e)
         {
             importDialog = new OpenFileDialog();
-            importDialog.Filter = "HexChat Theme Files|*.hct";
+            importDialog.Filter = "ZoiteChat Theme Files|*.hct";
             importDialog.FilterIndex = 1;
             importDialog.FileOk += new CancelEventHandler(importdialog_FileOk);
             importDialog.ShowDialog();

@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (c) 2010-2012 Berke Viktor.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,15 +22,15 @@
 
 #include <winsparkle.h>
 
-#include "hexchat-plugin.h"
+#include "zoitechat-plugin.h"
 
-#define APPCAST_URL "https://hexchat.github.io/appcast.xml"
+#define APPCAST_URL "https://zoitechat.github.io/appcast.xml"
 
-static hexchat_plugin *ph;   /* plugin handle */
+static zoitechat_plugin *ph;   /* plugin handle */
 static char name[] = "Update Checker";
-static char desc[] = "Check for HexChat updates automatically";
+static char desc[] = "Check for ZoiteChat updates automatically";
 static char version[] = "5.0";
-static const char upd_help[] = "Update Checker Usage:\n  /UPDCHK, check for HexChat updates\n";
+static const char upd_help[] = "Update Checker Usage:\n  /UPDCHK, check for ZoiteChat updates\n";
 
 static int
 check_cmd (char *word[], char *word_eol[], void *userdata)
@@ -41,7 +41,7 @@ check_cmd (char *word[], char *word_eol[], void *userdata)
 }
 
 int
-hexchat_plugin_init (hexchat_plugin *plugin_handle, char **plugin_name, char **plugin_desc, char **plugin_version, char *arg)
+zoitechat_plugin_init (zoitechat_plugin *plugin_handle, char **plugin_name, char **plugin_desc, char **plugin_version, char *arg)
 {
 	ph = plugin_handle;
 
@@ -52,19 +52,19 @@ hexchat_plugin_init (hexchat_plugin *plugin_handle, char **plugin_name, char **p
 	win_sparkle_set_appcast_url (APPCAST_URL);
 	win_sparkle_init ();
 
-	hexchat_hook_command (ph, "UPDCHK", HEXCHAT_PRI_NORM, check_cmd, upd_help, NULL);
-	hexchat_command (ph, "MENU -ishare\\download.png ADD \"Help/Check for Updates\" \"UPDCHK\"");
-	hexchat_printf (ph, "%s plugin loaded\n", name);
+	zoitechat_hook_command (ph, "UPDCHK", HEXCHAT_PRI_NORM, check_cmd, upd_help, NULL);
+	zoitechat_command (ph, "MENU -ishare\\download.png ADD \"Help/Check for Updates\" \"UPDCHK\"");
+	zoitechat_printf (ph, "%s plugin loaded\n", name);
 
 	return 1;
 }
 
 int
-hexchat_plugin_deinit (void)
+zoitechat_plugin_deinit (void)
 {
 	win_sparkle_cleanup ();
 
-	hexchat_command (ph, "MENU DEL \"Help/Check for updates\"");
-	hexchat_printf (ph, "%s plugin unloaded\n", name);
+	zoitechat_command (ph, "MENU DEL \"Help/Check for updates\"");
+	zoitechat_printf (ph, "%s plugin unloaded\n", name);
 	return 1;
 }

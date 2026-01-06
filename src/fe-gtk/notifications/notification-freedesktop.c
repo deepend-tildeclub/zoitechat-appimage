@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 2021 Patrick Griffis.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ notification_backend_show (const char *title, const char *text)
         text = g_markup_escape_text (text, -1);
 
     g_variant_builder_init (&params, G_VARIANT_TYPE ("(susssasa{sv}i)"));
-    g_variant_builder_add (&params, "s", "hexchat"); /* App name */
+    g_variant_builder_add (&params, "s", "zoitechat"); /* App name */
     g_variant_builder_add (&params, "u", 0); /* ID, 0 means don't replace */
     g_variant_builder_add (&params, "s", "io.github.Hexchat"); /* App icon */
     g_variant_builder_add (&params, "s", title);

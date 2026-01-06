@@ -34,13 +34,13 @@
 #include <unistd.h>
 #endif
 
-#include "hexchat.h"
+#include "zoitechat.h"
 #include "fe.h"
 #include "util.h"
 #include "cfgfiles.h"
 #include "chanopt.h"
 #include "ignore.h"
-#include "hexchat-plugin.h"
+#include "zoitechat-plugin.h"
 #include "inbound.h"
 #include "plugin.h"
 #include "plugin-identd.h"
@@ -51,7 +51,7 @@
 #include "outbound.h"
 #include "text.h"
 #include "url.h"
-#include "hexchatc.h"
+#include "zoitechatc.h"
 
 #if ! GLIB_CHECK_VERSION (2, 36, 0)
 #include <glib-object.h>			/* for g_type_init() */
@@ -88,8 +88,8 @@ GSList *tabmenu_list = 0;
 GList *sess_list_by_lastact[5] = {NULL, NULL, NULL, NULL, NULL};
 
 
-static int in_hexchat_exit = FALSE;
-int hexchat_is_quitting = FALSE;
+static int in_zoitechat_exit = FALSE;
+int zoitechat_is_quitting = FALSE;
 /* command-line args */
 int arg_dont_autoconnect = FALSE;
 int arg_skip_plugins = FALSE;
@@ -105,7 +105,7 @@ gint arg_existing = FALSE;
 
 struct session *current_tab;
 struct session *current_sess = 0;
-struct hexchatprefs prefs;
+struct zoitechatprefs prefs;
 
 /*
  * Update the priority queue of the "interesting sessions"
@@ -348,14 +348,14 @@ doover:
 
 /* these are only run if the lagometer is enabled */
 static int
-hexchat_lag_check (void)   /* this gets called every 30 seconds */
+zoitechat_lag_check (void)   /* this gets called every 30 seconds */
 {
 	lag_check ();
 	return 1;
 }
 
 static int
-hexchat_lag_check_update (void)   /* this gets called every 0.5 seconds */
+zoitechat_lag_check_update (void)   /* this gets called every 0.5 seconds */
 {
 	lagcheck_update ();
 	return 1;
@@ -363,7 +363,7 @@ hexchat_lag_check_update (void)   /* this gets called every 0.5 seconds */
 
 /* call whenever timeout intervals change */
 void
-hexchat_reinit_timers (void)
+zoitechat_reinit_timers (void)
 {
 	static int lag_check_update_tag = 0;
 	static int lag_check_tag = 0;
@@ -395,7 +395,7 @@ hexchat_reinit_timers (void)
 	/* lag-o-meter */
 	if (prefs.hex_gui_lagometer && lag_check_update_tag == 0)
 	{
-		lag_check_update_tag = fe_timeout_add (500, hexchat_lag_check_update, NULL);
+		lag_check_update_tag = fe_timeout_add (500, zoitechat_lag_check_update, NULL);
 	}
 	else if (!prefs.hex_gui_lagometer && lag_check_update_tag != 0)
 	{
@@ -407,7 +407,7 @@ hexchat_reinit_timers (void)
 	if ((prefs.hex_net_ping_timeout != 0 || prefs.hex_gui_lagometer)
 	    && lag_check_tag == 0)
 	{
-		lag_check_tag = fe_timeout_add_seconds (30, hexchat_lag_check, NULL);
+		lag_check_tag = fe_timeout_add_seconds (30, zoitechat_lag_check, NULL);
 	}
 	else if ((!prefs.hex_net_ping_timeout && !prefs.hex_gui_lagometer)
 					 && lag_check_tag != 0)
@@ -442,7 +442,7 @@ irc_init (session *sess)
 	plugin_add (sess, NULL, NULL, dbus_plugin_init, NULL, NULL, FALSE);
 #endif
 
-	hexchat_reinit_timers ();
+	zoitechat_reinit_timers ();
 
 	if (arg_url != NULL)
 	{
@@ -597,7 +597,7 @@ send_quit_or_part (session * killsess)
 			list = list->next;
 	}
 
-	if (hexchat_is_quitting)
+	if (zoitechat_is_quitting)
 		willquit = TRUE;
 
 	if (killserv->connected)
@@ -691,8 +691,8 @@ session_free (session *killsess)
 
 	g_free (killsess);
 
-	if (!sess_list && !in_hexchat_exit)
-		hexchat_exit ();						/* sess_list is empty, quit! */
+	if (!sess_list && !in_zoitechat_exit)
+		zoitechat_exit ();						/* sess_list is empty, quit! */
 
 	list = sess_list;
 	while (list)
@@ -751,7 +751,7 @@ static char defaultconf_commands[] =
 	"NAME SPING\n"			"CMD ping\n\n"\
 	"NAME SQUERY\n"		"CMD quote SQUERY %2 :&3\n\n"\
 	"NAME SSLSERVER\n"	"CMD server -ssl &2\n\n"\
-	"NAME SV\n"				"CMD echo HexChat %v %m\n\n"\
+	"NAME SV\n"				"CMD echo ZoiteChat %v %m\n\n"\
 	"NAME UMODE\n"			"CMD mode %n &2\n\n"\
 	"NAME UPTIME\n"		"CMD quote STATS u\n\n"\
 	"NAME VER\n"			"CMD ctcp %2 VERSION\n\n"\
@@ -980,10 +980,10 @@ xchat_init (void)
 }
 
 void
-hexchat_exit (void)
+zoitechat_exit (void)
 {
-	hexchat_is_quitting = TRUE;
-	in_hexchat_exit = TRUE;
+	zoitechat_is_quitting = TRUE;
+	in_zoitechat_exit = TRUE;
 	plugin_kill_all ();
 	fe_cleanup ();
 
@@ -1003,7 +1003,7 @@ hexchat_exit (void)
 }
 
 void
-hexchat_exec (const char *cmd)
+zoitechat_exec (const char *cmd)
 {
 	util_exec (cmd);
 }
@@ -1013,16 +1013,16 @@ static void
 set_locale (void)
 {
 #ifdef WIN32
-	char hexchat_lang[13];	/* LC_ALL= plus 5 chars of hex_gui_lang and trailing \0 */
+	char zoitechat_lang[13];	/* LC_ALL= plus 5 chars of hex_gui_lang and trailing \0 */
 
-	strcpy (hexchat_lang, "LC_ALL=");
+	strcpy (zoitechat_lang, "LC_ALL=");
 
 	if (0 <= prefs.hex_gui_lang && prefs.hex_gui_lang < LANGUAGES_LENGTH)
-		strcat (hexchat_lang, languages[prefs.hex_gui_lang]);
+		strcat (zoitechat_lang, languages[prefs.hex_gui_lang]);
 	else
-		strcat (hexchat_lang, "en");
+		strcat (zoitechat_lang, "en");
 
-	putenv (hexchat_lang);
+	putenv (zoitechat_lang);
 #endif
 }
 
@@ -1091,7 +1091,7 @@ main (int argc, char *argv[])
 		return ret;
 	
 #ifdef USE_DBUS
-	hexchat_remote ();
+	zoitechat_remote ();
 #endif
 
 #ifdef WIN32

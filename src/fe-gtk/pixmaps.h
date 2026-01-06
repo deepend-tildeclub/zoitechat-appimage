@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -38,7 +38,7 @@ extern GdkPixbuf *pix_tree_server;
 extern GdkPixbuf *pix_tree_util;
 
 extern GdkPixbuf *pix_book;
-extern GdkPixbuf *pix_hexchat;
+extern GdkPixbuf *pix_zoitechat;
 
 extern GdkPixmap *pixmap_load_from_file (char *file);
 extern void pixmaps_init (void);

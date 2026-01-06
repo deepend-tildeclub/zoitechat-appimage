@@ -19,16 +19,16 @@ if get_option('dbus-service-use-appid')
   dbus_output_file = 'io.github.Hexchat.service'
   dbus_cargs = '-DDBUS_SERVICE="io.github.Hexchat"'
 else
-  dbus_service_name = 'org.hexchat.service'
-  dbus_output_file = 'org.hexchat.service.service'
-  dbus_cargs = '-DDBUS_SERVICE="org.hexchat.service"'
+  dbus_service_name = 'org.zoitechat.service'
+  dbus_output_file = 'org.zoitechat.service.service'
+  dbus_cargs = '-DDBUS_SERVICE="org.zoitechat.service"'
 endif
 
 dbus_conf = configuration_data()
 dbus_conf.set('bindir', join_paths(get_option('prefix'), get_option('bindir')))
 dbus_conf.set('service_name', dbus_service_name)
 configure_file(
-  input: 'org.hexchat.service.service.in',
+  input: 'org.zoitechat.service.service.in',
   output: dbus_output_file,
   configuration: dbus_conf,
   install: true,
@@ -43,7 +43,7 @@ dbus_remote_object = custom_target('remote-object-glue',
             '--output=@OUTPUT@', '@INPUT@']
 )
 
-hexchat_dbus = static_library('hexchatdbus',
+zoitechat_dbus = static_library('zoitechatdbus',
   sources: [dbus_remote_object, marshal] + dbus_sources,
   c_args: dbus_cargs,
   dependencies: common_deps + dbus_deps,
@@ -51,6 +51,6 @@ hexchat_dbus = static_library('hexchatdbus',
   pic: true
 )
 
-hexchat_dbus_dep = declare_dependency(
-  link_with: hexchat_dbus
+zoitechat_dbus_dep = declare_dependency(
+  link_with: zoitechat_dbus
 )

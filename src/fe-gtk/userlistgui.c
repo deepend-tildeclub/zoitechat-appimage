@@ -24,13 +24,13 @@
 
 #include <gdk/gdkkeysyms.h>
 
-#include "../common/hexchat.h"
+#include "../common/zoitechat.h"
 #include "../common/util.h"
 #include "../common/userlist.h"
 #include "../common/modes.h"
 #include "../common/text.h"
 #include "../common/notify.h"
-#include "../common/hexchatc.h"
+#include "../common/zoitechatc.h"
 #include "../common/fe.h"
 #include "gtkutil.h"
 #include "palette.h"
@@ -664,7 +664,7 @@ userlist_create (GtkWidget *box)
 	gtk_widget_show (sw);
 
 	treeview = gtk_tree_view_new ();
-	gtk_widget_set_name (treeview, "hexchat-userlist");
+	gtk_widget_set_name (treeview, "zoitechat-userlist");
 	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (treeview), FALSE);
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection
 										  (GTK_TREE_VIEW (treeview)),

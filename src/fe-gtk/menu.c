@@ -32,8 +32,8 @@
 
 #include <gdk/gdkkeysyms.h>
 
-#include "../common/hexchat.h"
-#include "../common/hexchatc.h"
+#include "../common/zoitechat.h"
+#include "../common/zoitechatc.h"
 #include "../common/cfgfiles.h"
 #include "../common/outbound.h"
 #include "../common/ignore.h"
@@ -101,7 +101,7 @@ static void
 nick_command (session * sess, char *cmd)
 {
 	if (*cmd == '!')
-		hexchat_exec (cmd + 1);
+		zoitechat_exec (cmd + 1);
 	else
 		handle_command (sess, cmd, TRUE);
 }
@@ -514,7 +514,7 @@ menu_create (GtkWidget *menu, GSList *list, char *target, int check_path)
 		{
 			char *icon, *label;
 
-			/* default command in hexchat.c */
+			/* default command in zoitechat.c */
 			if (pop->cmd[0] == 'n' && !strcmp (pop->cmd, "notify -n ASK %s"))
 			{
 				/* don't create this item if already in notify list */
@@ -1491,7 +1491,7 @@ menu_noplugin_info (void)
 									"%m  =  machine info\n"\
                            "%n  =  your nick\n"\
 									"%t  =  time/date\n"\
-                           "%v  =  HexChat version\n"\
+                           "%v  =  ZoiteChat version\n"\
                            "%2  =  word 2\n"\
                            "%3  =  word 3\n"\
                            "&2  =  word 2 to the end of line\n"\
@@ -1538,7 +1538,7 @@ menu_noplugin_info (void)
                            "%s  =  the URL string\n\n"\
                            "Putting a ! in front of the command\n"\
                            "indicates it should be sent to a\n"\
-                           "shell instead of HexChat")
+                           "shell instead of ZoiteChat")
 
 static void
 menu_usercommands (void)
@@ -1613,7 +1613,7 @@ menu_ctcpguiopen (void)
 static void
 menu_docs (GtkWidget *wid, gpointer none)
 {
-	fe_open_url ("http://hexchat.readthedocs.org");
+	fe_open_url ("http://zoitechat.readthedocs.org");
 }
 
 /*static void
@@ -1674,7 +1674,7 @@ menu_metres_off (GtkWidget *item, gpointer none)
 	{
 		prefs.hex_gui_lagometer = 0;
 		prefs.hex_gui_throttlemeter = 0;
-		hexchat_reinit_timers ();
+		zoitechat_reinit_timers ();
 		menu_setting_foreach (menu_apply_metres_cb, -1, 0);
 	}
 }
@@ -1686,7 +1686,7 @@ menu_metres_text (GtkWidget *item, gpointer none)
 	{
 		prefs.hex_gui_lagometer = 2;
 		prefs.hex_gui_throttlemeter = 2;
-		hexchat_reinit_timers ();
+		zoitechat_reinit_timers ();
 		menu_setting_foreach (menu_apply_metres_cb, -1, 0);
 	}
 }
@@ -1698,7 +1698,7 @@ menu_metres_graph (GtkWidget *item, gpointer none)
 	{
 		prefs.hex_gui_lagometer = 1;
 		prefs.hex_gui_throttlemeter = 1;
-		hexchat_reinit_timers ();
+		zoitechat_reinit_timers ();
 		menu_setting_foreach (menu_apply_metres_cb, -1, 0);
 	}
 }
@@ -1710,7 +1710,7 @@ menu_metres_both (GtkWidget *item, gpointer none)
 	{
 		prefs.hex_gui_lagometer = 3;
 		prefs.hex_gui_throttlemeter = 3;
-		hexchat_reinit_timers ();
+		zoitechat_reinit_timers ();
 		menu_setting_foreach (menu_apply_metres_cb, -1, 0);
 	}
 }
@@ -1758,9 +1758,9 @@ menu_about (GtkWidget *wid, gpointer sess)
 	gtk_about_dialog_set_program_name (dialog, _(DISPLAY_NAME));
 	gtk_about_dialog_set_version (dialog, PACKAGE_VERSION);
 	gtk_about_dialog_set_license (dialog, license); /* gtk3 can use GTK_LICENSE_GPL_2_0 */
-	gtk_about_dialog_set_website (dialog, "http://hexchat.github.io");
+	gtk_about_dialog_set_website (dialog, "http://zoitechat.github.io");
 	gtk_about_dialog_set_website_label (dialog, "Website");
-	gtk_about_dialog_set_logo (dialog, pix_hexchat);
+	gtk_about_dialog_set_logo (dialog, pix_zoitechat);
 	gtk_about_dialog_set_copyright (dialog, "\302\251 1998-2010 Peter \305\275elezn\303\275\n\302\251 2009-2014 Berke Viktor");
 	gtk_about_dialog_set_comments (dialog, comment);
 
@@ -2501,7 +2501,7 @@ togitem:
 			menu_widgets[mymenu[i].id] = item;
 
 #ifdef HAVE_GTK_MAC
-		/* We want HexChat to be the app menu, not including Quit or HexChat itself */
+		/* We want ZoiteChat to be the app menu, not including Quit or ZoiteChat itself */
 		if (bar && item && i <= CLOSE_OFFSET + 1 && mymenu[i].id != MENU_ID_HEXCHAT)
 		{
 			if (!submenu || mymenu[i].type == M_MENUSUB)

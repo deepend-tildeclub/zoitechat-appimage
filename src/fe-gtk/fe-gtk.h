@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -22,7 +22,7 @@
 
 #include "config.h"
 
-#define DISPLAY_NAME "HexChat"
+#define DISPLAY_NAME "ZoiteChat"
 
 #ifndef WIN32
 #include <sys/types.h>

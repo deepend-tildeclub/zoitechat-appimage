@@ -1,4 +1,4 @@
 EXPORTS
-  hexchat_plugin_init
-  hexchat_plugin_deinit
-  hexchat_plugin_get_info
+  zoitechat_plugin_init
+  zoitechat_plugin_deinit
+  zoitechat_plugin_get_info

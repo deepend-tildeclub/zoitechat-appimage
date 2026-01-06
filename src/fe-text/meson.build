@@ -1,7 +1,7 @@
-executable('hexchat-text',
+executable('zoitechat-text',
   sources: [
     'fe-text.c',
   ],
-  dependencies: hexchat_common_dep,
+  dependencies: zoitechat_common_dep,
   install: true,
 )

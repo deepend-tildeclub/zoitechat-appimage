@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -20,7 +20,7 @@
 #ifndef HEXCHAT_BANLIST_H
 #define HEXCHAT_BANLIST_H
 
-#include "../common/hexchat.h"
+#include "../common/zoitechat.h"
 void banlist_opengui (session *sess);
 
 #ifndef RPL_BANLIST

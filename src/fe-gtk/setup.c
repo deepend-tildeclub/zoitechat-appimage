@@ -22,13 +22,13 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "../common/hexchat.h"
+#include "../common/zoitechat.h"
 #include "../common/cfgfiles.h"
 #include "../common/fe.h"
 #include "../common/text.h"
 #include "../common/userlist.h"
 #include "../common/util.h"
-#include "../common/hexchatc.h"
+#include "../common/zoitechatc.h"
 #include "../common/outbound.h"
 #include "fe-gtk.h"
 #include "gtkutil.h"
@@ -52,7 +52,7 @@ static GtkWidget *setup_window = NULL;
 static int last_selected_page = 0;
 static int last_selected_row = 0; /* sound row */
 static gboolean color_change;
-static struct hexchatprefs setup_prefs;
+static struct zoitechatprefs setup_prefs;
 static GtkWidget *cancel_button;
 static GtkWidget *font_dialog = NULL;
 
@@ -1486,7 +1486,7 @@ setup_create_color_button (GtkWidget *table, int num, int row, int col)
 	but = gtk_button_new_with_label (" ");
 	gtk_label_set_markup (GTK_LABEL (gtk_bin_get_child (GTK_BIN (but))), buf);
 	/* win32 build uses this to turn off themeing */
-	g_object_set_data (G_OBJECT (but), "hexchat-color", (gpointer)1);
+	g_object_set_data (G_OBJECT (but), "zoitechat-color", (gpointer)1);
 	gtk_table_attach (GTK_TABLE (table), but, col, col+1, row, row+1,
 							GTK_SHRINK | GTK_FILL, GTK_SHRINK | GTK_FILL, 0, 0);
 	g_signal_connect (G_OBJECT (but), "clicked",
@@ -2146,7 +2146,7 @@ setup_apply_real (int new_pix, int do_ulist, int do_layout, int do_identd)
 
 	mg_apply_setup ();
 	tray_apply_setup ();
-	hexchat_reinit_timers ();
+	zoitechat_reinit_timers ();
 
 	if (do_layout)
 		menu_change_layout ();
@@ -2156,7 +2156,7 @@ setup_apply_real (int new_pix, int do_ulist, int do_layout, int do_identd)
 }
 
 static void
-setup_apply (struct hexchatprefs *pr)
+setup_apply (struct zoitechatprefs *pr)
 {
 #ifdef WIN32
 	PangoFontDescription *old_desc;

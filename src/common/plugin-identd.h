@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -20,7 +20,7 @@
 #ifndef HEXCHAT_PLUGIN_IDENTD_H
 #define HEXCHAT_PLUGIN_IDENTD_H
 
-int identd_plugin_init (hexchat_plugin *plugin_handle, char **plugin_name,
+int identd_plugin_init (zoitechat_plugin *plugin_handle, char **plugin_name,
 				char **plugin_desc, char **plugin_version, char *arg);
 
 int identd_plugin_deinit (void);

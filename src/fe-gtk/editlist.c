@@ -33,9 +33,9 @@
 
 #include "fe-gtk.h"
 
-#include "../common/hexchat.h"
+#include "../common/zoitechat.h"
 #include "../common/cfgfiles.h"
-#include "../common/hexchatc.h"
+#include "../common/zoitechatc.h"
 #include "../common/fe.h"
 #include "menu.h"
 #include "gtkutil.h"
@@ -67,7 +67,7 @@ editlist_save (GtkWidget *igad, gchar *file)
 	char *name, *cmd;
 	int fh;
 
-	fh = hexchat_open_file (file, O_TRUNC | O_WRONLY | O_CREAT, 0600, XOF_DOMODE);
+	fh = zoitechat_open_file (file, O_TRUNC | O_WRONLY | O_CREAT, 0600, XOF_DOMODE);
 	if (fh != -1)
 	{
 		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (store), &iter))

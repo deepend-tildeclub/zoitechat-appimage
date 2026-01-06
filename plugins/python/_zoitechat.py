@@ -2,7 +2,7 @@ import inspect
 import sys
 from contextlib import contextmanager
 
-from _hexchat_embedded import ffi, lib
+from _zoitechat_embedded import ffi, lib
 
 __all__ = [
     'EAT_ALL', 'EAT_HEXCHAT', 'EAT_NONE', 'EAT_PLUGIN', 'EAT_XCHAT',
@@ -15,7 +15,7 @@ __all__ = [
     'set_pluginpref', 'strip', 'unhook',
 ]
 
-__doc__ = 'HexChat Scripting Interface'
+__doc__ = 'ZoiteChat Scripting Interface'
 __version__ = (2, 0)
 __license__ = 'GPL-2.0+'
 
@@ -57,7 +57,7 @@ else:
 
 # ------------ API ------------
 def prnt(string):
-    lib.hexchat_print(lib.ph, string.encode())
+    lib.zoitechat_print(lib.ph, string.encode())
 
 
 def emit_print(event_name, *args, **kwargs):
@@ -69,33 +69,33 @@ def emit_print(event_name, *args, **kwargs):
         cargs.append(cstring)
 
     if time == 0:
-        return lib.hexchat_emit_print(lib.ph, event_name.encode(), *cargs)
+        return lib.zoitechat_emit_print(lib.ph, event_name.encode(), *cargs)
 
-    attrs = lib.hexchat_event_attrs_create(lib.ph)
+    attrs = lib.zoitechat_event_attrs_create(lib.ph)
     attrs.server_time_utc = time
-    ret = lib.hexchat_emit_print_attrs(lib.ph, attrs, event_name.encode(), *cargs)
-    lib.hexchat_event_attrs_free(lib.ph, attrs)
+    ret = lib.zoitechat_emit_print_attrs(lib.ph, attrs, event_name.encode(), *cargs)
+    lib.zoitechat_event_attrs_free(lib.ph, attrs)
     return ret
 
 
 # TODO: this shadows itself. command should be changed to cmd
 def command(command):
-    lib.hexchat_command(lib.ph, command.encode())
+    lib.zoitechat_command(lib.ph, command.encode())
 
 
 def nickcmp(string1, string2):
-    return lib.hexchat_nickcmp(lib.ph, string1.encode(), string2.encode())
+    return lib.zoitechat_nickcmp(lib.ph, string1.encode(), string2.encode())
 
 
 def strip(text, length=-1, flags=3):
-    stripped = lib.hexchat_strip(lib.ph, text.encode(), length, flags)
+    stripped = lib.zoitechat_strip(lib.ph, text.encode(), length, flags)
     ret = __decode(ffi.string(stripped))
-    lib.hexchat_free(lib.ph, stripped)
+    lib.zoitechat_free(lib.ph, stripped)
     return ret
 
 
 def get_info(name):
-    ret = lib.hexchat_get_info(lib.ph, name.encode())
+    ret = lib.zoitechat_get_info(lib.ph, name.encode())
     if ret == ffi.NULL:
         return None
     if name in ('gtkwin_ptr', 'win_ptr'):
@@ -109,7 +109,7 @@ def get_info(name):
 def get_prefs(name):
     string_out = ffi.new('char**')
     int_out = ffi.new('int*')
-    _type = lib.hexchat_get_prefs(lib.ph, name.encode(), string_out, int_out)
+    _type = lib.zoitechat_get_prefs(lib.ph, name.encode(), string_out, int_out)
     if _type == 0:
         return None
 
@@ -136,7 +136,7 @@ __FIELD_CACHE = {}
 
 
 def __get_fields(name):
-    return __FIELD_CACHE.setdefault(name, __cstrarray_to_list(lib.hexchat_list_fields(lib.ph, name)))
+    return __FIELD_CACHE.setdefault(name, __cstrarray_to_list(lib.zoitechat_list_fields(lib.ph, name)))
 
 
 __FIELD_PROPERTY_CACHE = {}
@@ -177,7 +177,7 @@ def get_list(name):
     if name not in __get_fields(b'lists'):
         raise KeyError('list not available')
 
-    list_ = lib.hexchat_list_get(lib.ph, name)
+    list_ = lib.zoitechat_list_get(lib.ph, name)
     if list_ == ffi.NULL:
         return None
 
@@ -185,7 +185,7 @@ def get_list(name):
     fields = __get_fields(name)
 
     def string_getter(field):
-        string = lib.hexchat_list_str(lib.ph, list_, field)
+        string = lib.zoitechat_list_str(lib.ph, list_, field)
         if string != ffi.NULL:
             return __decode(ffi.string(string))
 
@@ -193,20 +193,20 @@ def get_list(name):
 
     def ptr_getter(field):
         if field == b'context':
-            ptr = lib.hexchat_list_str(lib.ph, list_, field)
-            ctx = ffi.cast('hexchat_context*', ptr)
+            ptr = lib.zoitechat_list_str(lib.ph, list_, field)
+            ctx = ffi.cast('zoitechat_context*', ptr)
             return Context(ctx)
 
         return None
 
     getters = {
         ord('s'): string_getter,
-        ord('i'): lambda field: lib.hexchat_list_int(lib.ph, list_, field),
-        ord('t'): lambda field: lib.hexchat_list_time(lib.ph, list_, field),
+        ord('i'): lambda field: lib.zoitechat_list_int(lib.ph, list_, field),
+        ord('t'): lambda field: lib.zoitechat_list_time(lib.ph, list_, field),
         ord('p'): ptr_getter,
     }
 
-    while lib.hexchat_list_next(lib.ph, list_) == 1:
+    while lib.zoitechat_list_next(lib.ph, list_) == 1:
         item = ListItem(orig_name)
         for _field in fields:
             getter = getters.get(get_getter(_field))
@@ -216,7 +216,7 @@ def get_list(name):
 
         ret.append(item)
 
-    lib.hexchat_list_free(lib.ph, list_)
+    lib.zoitechat_list_free(lib.ph, list_)
     return ret
 
 
@@ -224,50 +224,50 @@ def get_list(name):
 def hook_command(command, callback, userdata=None, priority=PRI_NORM, help=None):
     plugin = __get_current_plugin()
     hook = plugin.add_hook(callback, userdata)
-    handle = lib.hexchat_hook_command(lib.ph, command.encode(), priority, lib._on_command_hook,
+    handle = lib.zoitechat_hook_command(lib.ph, command.encode(), priority, lib._on_command_hook,
                                       help.encode() if help is not None else ffi.NULL, hook.handle)
 
-    hook.hexchat_hook = handle
+    hook.zoitechat_hook = handle
     return id(hook)
 
 
 def hook_print(name, callback, userdata=None, priority=PRI_NORM):
     plugin = __get_current_plugin()
     hook = plugin.add_hook(callback, userdata)
-    handle = lib.hexchat_hook_print(lib.ph, name.encode(), priority, lib._on_print_hook, hook.handle)
-    hook.hexchat_hook = handle
+    handle = lib.zoitechat_hook_print(lib.ph, name.encode(), priority, lib._on_print_hook, hook.handle)
+    hook.zoitechat_hook = handle
     return id(hook)
 
 
 def hook_print_attrs(name, callback, userdata=None, priority=PRI_NORM):
     plugin = __get_current_plugin()
     hook = plugin.add_hook(callback, userdata)
-    handle = lib.hexchat_hook_print_attrs(lib.ph, name.encode(), priority, lib._on_print_attrs_hook, hook.handle)
-    hook.hexchat_hook = handle
+    handle = lib.zoitechat_hook_print_attrs(lib.ph, name.encode(), priority, lib._on_print_attrs_hook, hook.handle)
+    hook.zoitechat_hook = handle
     return id(hook)
 
 
 def hook_server(name, callback, userdata=None, priority=PRI_NORM):
     plugin = __get_current_plugin()
     hook = plugin.add_hook(callback, userdata)
-    handle = lib.hexchat_hook_server(lib.ph, name.encode(), priority, lib._on_server_hook, hook.handle)
-    hook.hexchat_hook = handle
+    handle = lib.zoitechat_hook_server(lib.ph, name.encode(), priority, lib._on_server_hook, hook.handle)
+    hook.zoitechat_hook = handle
     return id(hook)
 
 
 def hook_server_attrs(name, callback, userdata=None, priority=PRI_NORM):
     plugin = __get_current_plugin()
     hook = plugin.add_hook(callback, userdata)
-    handle = lib.hexchat_hook_server_attrs(lib.ph, name.encode(), priority, lib._on_server_attrs_hook, hook.handle)
-    hook.hexchat_hook = handle
+    handle = lib.zoitechat_hook_server_attrs(lib.ph, name.encode(), priority, lib._on_server_attrs_hook, hook.handle)
+    hook.zoitechat_hook = handle
     return id(hook)
 
 
 def hook_timer(timeout, callback, userdata=None):
     plugin = __get_current_plugin()
     hook = plugin.add_hook(callback, userdata)
-    handle = lib.hexchat_hook_timer(lib.ph, timeout, lib._on_timer_hook, hook.handle)
-    hook.hexchat_hook = handle
+    handle = lib.zoitechat_hook_timer(lib.ph, timeout, lib._on_timer_hook, hook.handle)
+    hook.zoitechat_hook = handle
     return id(hook)
 
 
@@ -284,10 +284,10 @@ def unhook(handle):
 
 def set_pluginpref(name, value):
     if isinstance(value, str):
-        return bool(lib.hexchat_pluginpref_set_str(lib.ph, name.encode(), value.encode()))
+        return bool(lib.zoitechat_pluginpref_set_str(lib.ph, name.encode(), value.encode()))
 
     if isinstance(value, int):
-        return bool(lib.hexchat_pluginpref_set_int(lib.ph, name.encode(), value))
+        return bool(lib.zoitechat_pluginpref_set_int(lib.ph, name.encode(), value))
 
     # XXX: This should probably raise but this keeps API
     return False
@@ -296,7 +296,7 @@ def set_pluginpref(name, value):
 def get_pluginpref(name):
     name = name.encode()
     string_out = ffi.new('char[512]')
-    if lib.hexchat_pluginpref_get_str(lib.ph, name, string_out) != 1:
+    if lib.zoitechat_pluginpref_get_str(lib.ph, name, string_out) != 1:
         return None
 
     string = ffi.string(string_out)
@@ -305,7 +305,7 @@ def get_pluginpref(name):
     if len(string) > 12:  # Can't be a number
         return __decode(string)
 
-    number = lib.hexchat_pluginpref_get_int(lib.ph, name)
+    number = lib.zoitechat_pluginpref_get_int(lib.ph, name)
     if number == -1 and string != b'-1':
         return __decode(string)
 
@@ -313,12 +313,12 @@ def get_pluginpref(name):
 
 
 def del_pluginpref(name):
-    return bool(lib.hexchat_pluginpref_delete(lib.ph, name.encode()))
+    return bool(lib.zoitechat_pluginpref_delete(lib.ph, name.encode()))
 
 
 def list_pluginpref():
     prefs_str = ffi.new('char[4096]')
-    if lib.hexchat_pluginpref_list(lib.ph, prefs_str) == 1:
+    if lib.zoitechat_pluginpref_list(lib.ph, prefs_str) == 1:
         return __decode(ffi.string(prefs_str)).split(',')
 
     return []
@@ -336,18 +336,18 @@ class Context:
 
     @contextmanager
     def __change_context(self):
-        old_ctx = lib.hexchat_get_context(lib.ph)
+        old_ctx = lib.zoitechat_get_context(lib.ph)
         if not self.set():
             # XXX: Behavior change, previously used wrong context
-            lib.hexchat_print(lib.ph, b'Context object refers to closed context, ignoring call')
+            lib.zoitechat_print(lib.ph, b'Context object refers to closed context, ignoring call')
             return
 
         yield
-        lib.hexchat_set_context(lib.ph, old_ctx)
+        lib.zoitechat_set_context(lib.ph, old_ctx)
 
     def set(self):
         # XXX: API addition, C plugin silently ignored failure
-        return bool(lib.hexchat_set_context(lib.ph, self._ctx))
+        return bool(lib.zoitechat_set_context(lib.ph, self._ctx))
 
     def prnt(self, string):
         with self.__change_context():
@@ -372,14 +372,14 @@ class Context:
 
 
 def get_context():
-    ctx = lib.hexchat_get_context(lib.ph)
+    ctx = lib.zoitechat_get_context(lib.ph)
     return Context(ctx)
 
 
 def find_context(server=None, channel=None):
     server = server.encode() if server is not None else ffi.NULL
     channel = channel.encode() if channel is not None else ffi.NULL
-    ctx = lib.hexchat_find_context(lib.ph, server, channel)
+    ctx = lib.zoitechat_find_context(lib.ph, server, channel)
     if ctx == ffi.NULL:
         return None
 

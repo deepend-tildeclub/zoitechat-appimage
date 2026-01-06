@@ -1,4 +1,4 @@
-/* HexChat
+/* ZoiteChat
  * Copyright (C) 1998-2010 Peter Zelezny.
  * Copyright (C) 2009-2013 Berke Viktor.
  *
@@ -22,7 +22,7 @@
 #ifndef HEXCHAT_CFGFILES_H
 #define HEXCHAT_CFGFILES_H
 
-#include "hexchat.h"
+#include "zoitechat.h"
 
 #define LANGUAGES_LENGTH 53
 
@@ -48,8 +48,8 @@ void list_loadconf (char *file, GSList ** list, char *defaultconf);
 int list_delentry (GSList ** list, char *name);
 void list_addentry (GSList ** list, char *cmd, char *name);
 int cmd_set (session *sess, char *tbuf, char *word[], char *word_eol[]);
-int hexchat_open_file (const char *file, int flags, int mode, int xof_flags);
-FILE *hexchat_fopen_file (const char *file, const char *mode, int xof_flags);
+int zoitechat_open_file (const char *file, int flags, int mode, int xof_flags);
+FILE *zoitechat_fopen_file (const char *file, const char *mode, int xof_flags);
 
 #define XOF_DOMODE 1
 #define XOF_FULLPATH 2
@@ -60,10 +60,10 @@ FILE *hexchat_fopen_file (const char *file, const char *mode, int xof_flags);
 #define STRUCT_OFFSET_INT(type,field) \
 ( (unsigned int) (((int *) (&(((type *) NULL)->field)))- ((int *) NULL)) )
 
-#define P_OFFSET(field) STRUCT_OFFSET_STR(struct hexchatprefs, field),sizeof(prefs.field)
-#define P_OFFSETNL(field) STRUCT_OFFSET_STR(struct hexchatprefs, field)
-#define P_OFFINT(field) STRUCT_OFFSET_INT(struct hexchatprefs, field),0
-#define P_OFFINTNL(field) STRUCT_OFFSET_INT(struct hexchatprefs, field)
+#define P_OFFSET(field) STRUCT_OFFSET_STR(struct zoitechatprefs, field),sizeof(prefs.field)
+#define P_OFFSETNL(field) STRUCT_OFFSET_STR(struct zoitechatprefs, field)
+#define P_OFFINT(field) STRUCT_OFFSET_INT(struct zoitechatprefs, field),0
+#define P_OFFINTNL(field) STRUCT_OFFSET_INT(struct zoitechatprefs, field)
 
 struct prefs
 {

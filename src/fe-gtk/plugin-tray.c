@@ -17,9 +17,9 @@
  */
 
 #include <string.h>
-#include "../common/hexchat-plugin.h"
-#include "../common/hexchat.h"
-#include "../common/hexchatc.h"
+#include "../common/zoitechat-plugin.h"
+#include "../common/zoitechat.h"
+#include "../common/zoitechatc.h"
 #include "../common/inbound.h"
 #include "../common/server.h"
 #include "../common/fe.h"
@@ -68,7 +68,7 @@ static TrayStatus tray_status;
 static guint tray_menu_timer;
 static gint64 tray_menu_inactivetime;
 #endif
-static hexchat_plugin *ph;
+static zoitechat_plugin *ph;
 
 static TrayIcon custom_icon1;
 static TrayIcon custom_icon2;
@@ -91,7 +91,7 @@ tray_get_window_status (void)
 {
 	const char *st;
 
-	st = hexchat_get_info (ph, "win_status");
+	st = zoitechat_get_info (ph, "win_status");
 
 	if (!st)
 		return WS_HIDDEN;
@@ -328,9 +328,9 @@ tray_toggle_visibility (gboolean force_hide)
 		return FALSE;
 
 	/* ph may have an invalid context now */
-	hexchat_set_context (ph, hexchat_find_context (ph, NULL, NULL));
+	zoitechat_set_context (ph, zoitechat_find_context (ph, NULL, NULL));
 
-	win = GTK_WINDOW (hexchat_get_info (ph, "gtkwin_ptr"));
+	win = GTK_WINDOW (zoitechat_get_info (ph, "gtkwin_ptr"));
 
 	tray_stop_flash ();
 	tray_reset_counts ();
@@ -341,7 +341,7 @@ tray_toggle_visibility (gboolean force_hide)
 	if (force_hide || gtk_widget_get_visible (GTK_WIDGET (win)))
 	{
 		if (prefs.hex_gui_tray_away)
-			hexchat_command (ph, "ALLSERV AWAY");
+			zoitechat_command (ph, "ALLSERV AWAY");
 		gtk_window_get_position (win, &x, &y);
 		screen = gtk_window_get_screen (win);
 		maximized = prefs.hex_gui_win_state;
@@ -351,7 +351,7 @@ tray_toggle_visibility (gboolean force_hide)
 	else
 	{
 		if (prefs.hex_gui_tray_away)
-			hexchat_command (ph, "ALLSERV BACK");
+			zoitechat_command (ph, "ALLSERV BACK");
 		gtk_window_set_screen (win, screen);
 		gtk_window_move (win, x, y);
 		if (maximized)
@@ -534,7 +534,7 @@ tray_menu_cb (GtkWidget *widget, guint button, guint time, gpointer userdata)
 	int away_status;
 
 	/* ph may have an invalid context now */
-	hexchat_set_context (ph, hexchat_find_context (ph, NULL, NULL));
+	zoitechat_set_context (ph, zoitechat_find_context (ph, NULL, NULL));
 
 	/* close any old menu */
 	if (G_IS_OBJECT (menu))
@@ -632,10 +632,10 @@ tray_hilight_cb (char *word[], void *userdata)
 		tray_hilight_count++;
 		if (tray_hilight_count == 1)
 			tray_set_tipf (_("Highlighted message from: %s (%s) - %s"),
-								word[1], hexchat_get_info (ph, "channel"), _(DISPLAY_NAME));
+								word[1], zoitechat_get_info (ph, "channel"), _(DISPLAY_NAME));
 		else
 			tray_set_tipf (_("%u highlighted messages, latest from: %s (%s) - %s"),
-								tray_hilight_count, word[1], hexchat_get_info (ph, "channel"),
+								tray_hilight_count, word[1], zoitechat_get_info (ph, "channel"),
 								_(DISPLAY_NAME));
 	}
 
@@ -655,7 +655,7 @@ tray_message_cb (char *word[], void *userdata)
 		tray_pub_count++;
 		if (tray_pub_count == 1)
 			tray_set_tipf (_("Channel message from: %s (%s) - %s"),
-								word[1], hexchat_get_info (ph, "channel"), _(DISPLAY_NAME));
+								word[1], zoitechat_get_info (ph, "channel"), _(DISPLAY_NAME));
 		else
 			tray_set_tipf (_("%u channel messages. - %s"), tray_pub_count, _(DISPLAY_NAME));
 	}
@@ -671,9 +671,9 @@ tray_priv (char *from, char *text)
 	if (alert_match_word (from, prefs.hex_irc_no_hilight))
 		return;
 
-	network = hexchat_get_info (ph, "network");
+	network = zoitechat_get_info (ph, "network");
 	if (!network)
-		network = hexchat_get_info (ph, "server");
+		network = zoitechat_get_info (ph, "server");
 
 	if (prefs.hex_input_tray_priv)
 	{
@@ -714,9 +714,9 @@ tray_dcc_cb (char *word[], void *userdata)
 /*	if (tray_status == TS_FILEOFFER)
 		return HEXCHAT_EAT_NONE;*/
 
-	network = hexchat_get_info (ph, "network");
+	network = zoitechat_get_info (ph, "network");
 	if (!network)
-		network = hexchat_get_info (ph, "server");
+		network = zoitechat_get_info (ph, "server");
 
 	if (prefs.hex_input_tray_priv && (!prefs.hex_away_omit_alerts || tray_find_away_status () != 1))
 	{
@@ -764,42 +764,42 @@ tray_apply_setup (void)
 	}
 	else
 	{
-		GtkWindow *window = GTK_WINDOW(hexchat_get_info (ph, "gtkwin_ptr"));
+		GtkWindow *window = GTK_WINDOW(zoitechat_get_info (ph, "gtkwin_ptr"));
 		if (prefs.hex_gui_tray && gtkutil_tray_icon_supported (window))
 			tray_init ();
 	}
 }
 
 int
-tray_plugin_init (hexchat_plugin *plugin_handle, char **plugin_name,
+tray_plugin_init (zoitechat_plugin *plugin_handle, char **plugin_name,
 				char **plugin_desc, char **plugin_version, char *arg)
 {
-	/* we need to save this for use with any hexchat_* functions */
+	/* we need to save this for use with any zoitechat_* functions */
 	ph = plugin_handle;
 
 	*plugin_name = "";
 	*plugin_desc = "";
 	*plugin_version = "";
 
-	hexchat_hook_print (ph, "Channel Msg Hilight", -1, tray_hilight_cb, NULL);
-	hexchat_hook_print (ph, "Channel Action Hilight", -1, tray_hilight_cb, NULL);
+	zoitechat_hook_print (ph, "Channel Msg Hilight", -1, tray_hilight_cb, NULL);
+	zoitechat_hook_print (ph, "Channel Action Hilight", -1, tray_hilight_cb, NULL);
 
-	hexchat_hook_print (ph, "Channel Message", -1, tray_message_cb, NULL);
-	hexchat_hook_print (ph, "Channel Action", -1, tray_message_cb, NULL);
-	hexchat_hook_print (ph, "Channel Notice", -1, tray_message_cb, NULL);
+	zoitechat_hook_print (ph, "Channel Message", -1, tray_message_cb, NULL);
+	zoitechat_hook_print (ph, "Channel Action", -1, tray_message_cb, NULL);
+	zoitechat_hook_print (ph, "Channel Notice", -1, tray_message_cb, NULL);
 
-	hexchat_hook_print (ph, "Private Message", -1, tray_priv_cb, NULL);
-	hexchat_hook_print (ph, "Private Message to Dialog", -1, tray_priv_cb, NULL);
-	hexchat_hook_print (ph, "Private Action", -1, tray_priv_cb, NULL);
-	hexchat_hook_print (ph, "Private Action to Dialog", -1, tray_priv_cb, NULL);
-	hexchat_hook_print (ph, "Notice", -1, tray_priv_cb, NULL);
-	hexchat_hook_print (ph, "Invited", -1, tray_invited_cb, NULL);
+	zoitechat_hook_print (ph, "Private Message", -1, tray_priv_cb, NULL);
+	zoitechat_hook_print (ph, "Private Message to Dialog", -1, tray_priv_cb, NULL);
+	zoitechat_hook_print (ph, "Private Action", -1, tray_priv_cb, NULL);
+	zoitechat_hook_print (ph, "Private Action to Dialog", -1, tray_priv_cb, NULL);
+	zoitechat_hook_print (ph, "Notice", -1, tray_priv_cb, NULL);
+	zoitechat_hook_print (ph, "Invited", -1, tray_invited_cb, NULL);
 
-	hexchat_hook_print (ph, "DCC Offer", -1, tray_dcc_cb, NULL);
+	zoitechat_hook_print (ph, "DCC Offer", -1, tray_dcc_cb, NULL);
 
-	hexchat_hook_print (ph, "Focus Window", -1, tray_focus_cb, NULL);
+	zoitechat_hook_print (ph, "Focus Window", -1, tray_focus_cb, NULL);
 
-	GtkWindow *window = GTK_WINDOW(hexchat_get_info (ph, "gtkwin_ptr"));
+	GtkWindow *window = GTK_WINDOW(zoitechat_get_info (ph, "gtkwin_ptr"));
 	if (prefs.hex_gui_tray && gtkutil_tray_icon_supported (window))
 		tray_init ();
 
@@ -807,7 +807,7 @@ tray_plugin_init (hexchat_plugin *plugin_handle, char **plugin_name,
 }
 
 int
-tray_plugin_deinit (hexchat_plugin *plugin_handle)
+tray_plugin_deinit (zoitechat_plugin *plugin_handle)
 {
 #ifdef WIN32
 	tray_cleanup ();

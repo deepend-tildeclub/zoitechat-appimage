@@ -3,7 +3,7 @@ common_sources = [
   'chanopt.c',
   'ctcp.c',
   'dcc.c',
-  'hexchat.c',
+  'zoitechat.c',
   'history.c',
   'ignore.c',
   'inbound.c',
@@ -56,7 +56,7 @@ endif
 
 marshal = gnome.genmarshal('marshal',
   sources: 'marshalers.list',
-  prefix: '_hexchat_marshal',
+  prefix: '_zoitechat_marshal',
   internal: true
 )
 
@@ -80,16 +80,16 @@ endif
 
 if dbus_glib_dep.found()
   subdir('dbus')
-  common_deps += hexchat_dbus_dep
+  common_deps += zoitechat_dbus_dep
   common_includes += include_directories('dbus')
 endif
 
 if get_option('plugin')
   common_deps += libgmodule_dep
-  install_headers('hexchat-plugin.h')
+  install_headers('zoitechat-plugin.h')
 endif
 
-hexchat_common = static_library('hexchatcommon',
+zoitechat_common = static_library('zoitechatcommon',
   sources: [textevents] + marshal + common_sources,
   include_directories: config_h_include,
   dependencies: common_deps + common_sysinfo_deps,
@@ -97,15 +97,15 @@ hexchat_common = static_library('hexchatcommon',
   pic: true
 )
 
-hexchat_common_dep = declare_dependency(
+zoitechat_common_dep = declare_dependency(
   sources: [textevents] + marshal,
-  link_with: hexchat_common,
+  link_with: zoitechat_common,
   include_directories: common_includes,
   compile_args: common_cflags,
   dependencies: libgio_dep,
 )
 
-hexchat_plugin_dep = declare_dependency(
+zoitechat_plugin_dep = declare_dependency(
   include_directories: common_includes,
   compile_args: common_cflags,
   dependencies: global_deps,

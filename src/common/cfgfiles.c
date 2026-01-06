@@ -23,19 +23,19 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "hexchat.h"
+#include "zoitechat.h"
 #include "cfgfiles.h"
 #include "util.h"
 #include "fe.h"
 #include "text.h"
-#include "hexchatc.h"
+#include "zoitechatc.h"
 #include "typedef.h"
 
 #ifdef WIN32
 #include <io.h>
 #else
 #include <unistd.h>
-#define HEXCHAT_DIR "hexchat"
+#define HEXCHAT_DIR "zoitechat"
 #endif
 
 #define DEF_FONT "Monospace 9"
@@ -322,7 +322,7 @@ get_xdir (void)
 			roaming_path = g_utf16_to_utf8 (roaming_path_wide, -1, NULL, NULL, NULL);
 			CoTaskMemFree (roaming_path_wide);
 
-			xdir = g_build_filename (roaming_path, "HexChat", NULL);
+			xdir = g_build_filename (roaming_path, "ZoiteChat", NULL);
 
 			g_free (roaming_path);
 		}
@@ -345,7 +345,7 @@ default_file (void)
 
 	if (!dfile)
 	{
-		dfile = g_build_filename (get_xdir (), "hexchat.conf", NULL);
+		dfile = g_build_filename (get_xdir (), "zoitechat.conf", NULL);
 	}
 	return dfile;
 }
@@ -533,7 +533,7 @@ const struct prefs vars[] =
 	{"net_auto_reconnectonfail", P_OFFINT (hex_net_auto_reconnectonfail), TYPE_BOOL},
 #endif
 	{"net_bind_host", P_OFFSET (hex_net_bind_host), TYPE_STR},
-	{"net_ping_timeout", P_OFFINT (hex_net_ping_timeout), TYPE_INT, hexchat_reinit_timers},
+	{"net_ping_timeout", P_OFFINT (hex_net_ping_timeout), TYPE_INT, zoitechat_reinit_timers},
 	{"net_proxy_auth", P_OFFINT (hex_net_proxy_auth), TYPE_BOOL},
 	{"net_proxy_host", P_OFFSET (hex_net_proxy_host), TYPE_STR},
 	{"net_proxy_pass", P_OFFSET (hex_net_proxy_pass), TYPE_STR},
@@ -734,7 +734,7 @@ load_default_config(void)
 	username = convert_with_fallback (username, "username");
 	realname = convert_with_fallback (realname, "realname");
 
-	memset (&prefs, 0, sizeof (struct hexchatprefs));
+	memset (&prefs, 0, sizeof (struct zoitechatprefs));
 
 	/* put in default values, anything left out is automatically zero */
 
@@ -1327,7 +1327,7 @@ cmd_set (struct session *sess, char *tbuf, char *word[], char *word_eol[])
 }
 
 int
-hexchat_open_file (const char *file, int flags, int mode, int xof_flags)
+zoitechat_open_file (const char *file, int flags, int mode, int xof_flags)
 {
 	char *buf;
 	int fd;
@@ -1357,7 +1357,7 @@ hexchat_open_file (const char *file, int flags, int mode, int xof_flags)
 }
 
 FILE *
-hexchat_fopen_file (const char *file, const char *mode, int xof_flags)
+zoitechat_fopen_file (const char *file, const char *mode, int xof_flags)
 {
 	char *buf;
 	FILE *fh;
