@@ -771,7 +771,7 @@ text_convert_invalid (const gchar* text, gssize len, GIConv converter, const gch
 		 * But iconv may not convert everything till invalid_start_pos since the last few bytes may be part of a shift sequence.
 		 * So get the new bytes_read and use it as the actual invalid_start_pos to handle this.
 		 *
-		 * See https://github.com/zoitechat/zoitechat/issues/1758
+		 * See https://github.com/hexchat/hexchat/issues/1758
 		 */
 		result_part = g_convert_with_iconv (current_start, invalid_start_pos, converter, &invalid_start_pos, &result_part_len, NULL);
 		g_iconv (converter, NULL, NULL, NULL, NULL);
