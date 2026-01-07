@@ -21,4 +21,4 @@ jobs:
     - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v3
       with:
         bundle: zoitechat.flatpak
-        manifest-path: flatpak/io.github.Hexchat.json
+        manifest-path: flatpak/io.github.Zoitechat.json
