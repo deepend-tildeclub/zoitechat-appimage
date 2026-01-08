@@ -30,11 +30,9 @@ if get_option('with-perl') != 'false'
   subdir('perl')
 endif
 
-# Disable broken python plugin for 2.17.0.
-
-# if get_option('with-python') != 'false'
-#   subdir('python')
-# endif
+if get_option('with-python') != 'false'
+  subdir('python')
+endif
 
 if get_option('with-sysinfo')
   subdir('sysinfo')
