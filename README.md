@@ -1,3 +1,7 @@
+[![Ubuntu Build](https://github.com/ZoiteChat/zoitechat/actions/workflows/ubuntu-build.yml/badge.svg)](https://github.com/ZoiteChat/zoitechat/actions/workflows/ubuntu-build.yml)
+[![Flatpak Build](https://github.com/ZoiteChat/zoitechat/actions/workflows/flatpak-build.yml/badge.svg)](https://github.com/ZoiteChat/zoitechat/actions/workflows/flatpak-build.yml)
+[![Windows Build](https://github.com/ZoiteChat/zoitechat/actions/workflows/windows-build.yml/badge.svg)](https://github.com/ZoiteChat/zoitechat/actions/workflows/windows-build.yml)
+
 ZoiteChat Debian packaging (starter kit)
 
 This folder was generated from Debian's HexChat packaging and then renamed/adjusted for ZoiteChat.
