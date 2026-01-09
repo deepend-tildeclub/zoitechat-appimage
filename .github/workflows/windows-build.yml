@@ -47,11 +47,21 @@ jobs:
           Invoke-WebRequest https://github.com/zoitechat/gvsbuild/releases/download/zoitechat-2.17.0/perl-5.20.0-${{ matrix.arch }}.7z -OutFile deps\perl-${{ matrix.arch }}.7z
           & 7z.exe x deps\perl-${{ matrix.arch }}.7z -oC:\gtk-build\perl-5.20\${{ matrix.platform }}
 
-          New-Item -Path "c:\gtk-build" -Name "python-3.8" -ItemType "Directory"
-          New-Item -Path "c:\gtk-build\python-3.8" -Name "${{ matrix.platform }}" -ItemType "SymbolicLink" -Value "C:/hostedtoolcache/windows/Python/3.8.10/${{ matrix.arch }}"
+          New-Item -Path "C:\gtk-build\python-3.8" -ItemType Directory -Force | Out-Null
 
-          C:/hostedtoolcache/windows/Python/3.8.10/${{ matrix.arch }}/python.exe -m pip install cffi
-        shell: powershell
+          $pyRoot = $env:pythonLocation
+          if (-not $pyRoot) {
+            $pyRoot = & python -c "import sys; print(sys.prefix)"
+          }
+
+          $target = "C:\gtk-build\python-3.8\${{ matrix.platform }}"
+          if (Test-Path $target) { Remove-Item $target -Recurse -Force }
+
+          New-Item -Path "C:\gtk-build\python-3.8" -Name "${{ matrix.platform }}" -ItemType Junction -Value $pyRoot | Out-Null
+
+          python -m pip install --upgrade pip
+          python -m pip install cffi
+
 
       - name: Build
         run: |
