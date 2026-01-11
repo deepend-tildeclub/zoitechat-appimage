@@ -11,8 +11,8 @@ override_dh_auto_configure:
 		-Dwith-lua=lua53
 
 override_dh_installchangelogs:
-	set -e; \
+	set -eux; \
 	for p in $$(dh_listpackages); do \
-		install -d "debian/$$p/usr/share/doc/$$p"; \
+		mkdir -p "debian/$$p/usr/share/doc/$$p"; \
+		dh_installchangelogs -p"$$p" debian/changelog.txt; \
 	done
-	dh_installchangelogs debian/changelog.txt
