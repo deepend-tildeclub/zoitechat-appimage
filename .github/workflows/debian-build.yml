@@ -34,7 +34,24 @@ jobs:
           apt-get install -y --no-install-recommends \
             devscripts equivs fakeroot dpkg-dev
 
-      - name: Install Build-Depends from debian/control
+      - name: Enable deb-src + install HexChat build-deps
+        run: |
+          set -eux
+          export DEBIAN_FRONTEND=noninteractive
+
+          # Enable source repositories (needed for `apt-get build-dep`)
+          cat >/etc/apt/sources.list.d/deb-src.list <<'EOF'
+          deb-src http://deb.debian.org/debian bookworm main
+          deb-src http://deb.debian.org/debian bookworm-updates main
+          deb-src http://deb.debian.org/debian-security bookworm-security main
+          EOF
+
+          apt-get update
+
+          # Pull HexChat's build dependencies from Debian packaging
+          apt-get build-dep -y --no-install-recommends hexchat
+
+      - name: Install Build-Depends from this repo's debian/control
         run: |
           set -eux
           mk-build-deps -i -r -t "apt-get -y --no-install-recommends" debian/control
