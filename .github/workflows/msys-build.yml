@@ -25,24 +25,32 @@ jobs:
             mingw-w64-x86_64-pkg-config
             mingw-w64-x86_64-python-cffi
             mingw-w64-x86_64-meson
+            mingw-w64-x86_64-ninja
             mingw-w64-x86_64-gtk2
             mingw-w64-x86_64-gtk-update-icon-cache
             mingw-w64-x86_64-luajit
             mingw-w64-x86_64-desktop-file-utils
+            mingw-w64-x86_64-gettext-tools
+
+      - name: Sanity check gettext ITS rules
+        run: |
+          set -eux
+          which msgfmt || true
+          msgfmt --version
+          ls -la /mingw64/share/gettext-*/its || true
 
       - name: Configure
-        run: >-
-          meson build
-          -Dtext-frontend=true
-          -Ddbus=disabled
-          -Dwith-upd=false
-          -Dwith-perl=false
+        run: |
+          set -eux
+          rm -rf build
+          meson setup build \
+            -Dtext-frontend=true \
+            -Ddbus=disabled \
+            -Dwith-upd=false \
+            -Dwith-perl=false
 
       - name: Build
         run: ninja -C build
 
       - name: Test
         run: ninja -C build test
-
-      - name: Install
-        run: ninja -C build install
