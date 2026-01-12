@@ -22,12 +22,14 @@ jobs:
           update: true
           install: >-
             git
-            gettext
-            libxml2
+            bsdtar
             mingw-w64-clang-aarch64-toolchain
             mingw-w64-clang-aarch64-meson
             mingw-w64-clang-aarch64-ninja
             mingw-w64-clang-aarch64-pkgconf
+            mingw-w64-clang-aarch64-gettext-tools
+            mingw-w64-clang-aarch64-libxml2
+            mingw-w64-clang-aarch64-winpthreads
             mingw-w64-clang-aarch64-python-cffi
             mingw-w64-clang-aarch64-gtk2
             mingw-w64-clang-aarch64-gtk-update-icon-cache
@@ -37,29 +39,39 @@ jobs:
       - name: Configure
         run: |
           set -euxo pipefail
+          export PATH="/clangarm64/bin:$PATH"
+
+          # Sanity: ensure we're using the CLANGARM64 msgfmt (with ITS data)
+          which msgfmt
+          msgfmt --version
+
           rm -rf build package
           meson setup build \
             -Dtext-frontend=true \
             -Ddbus=disabled \
             -Dwith-upd=false \
-            -Dwith-perl=false
+            -Dwith-perl=false \
+            -Dc_link_args=-lwinpthread \
+            -Dcxx_link_args=-lwinpthread
 
       - name: Build
         run: |
           set -euxo pipefail
+          export PATH="/clangarm64/bin:$PATH"
           ninja -C build
 
       - name: Test
         run: |
           set -euxo pipefail
+          export PATH="/clangarm64/bin:$PATH"
           ninja -C build test
 
       - name: Stage install (portable zip)
         run: |
           set -euxo pipefail
+          export PATH="/clangarm64/bin:$PATH"
           DESTDIR="$PWD/package" ninja -C build install
           cd package
-          # bsdtar exists on GitHub runners; makes a normal zip
           bsdtar -acf ../zoitechat-windows-arm64.zip .
           cd ..
 
