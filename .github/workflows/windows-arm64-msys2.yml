@@ -41,7 +41,6 @@ jobs:
           set -euxo pipefail
           export PATH="/clangarm64/bin:$PATH"
 
-          # Sanity: ensure we're using the CLANGARM64 msgfmt (with ITS data)
           which msgfmt
           msgfmt --version
 
@@ -52,7 +51,7 @@ jobs:
             -Dwith-upd=false \
             -Dwith-perl=false \
             -Dc_link_args=-lwinpthread \
-            -Dcxx_link_args=-lwinpthread
+            -Dcpp_link_args=-lwinpthread
 
       - name: Build
         run: |
