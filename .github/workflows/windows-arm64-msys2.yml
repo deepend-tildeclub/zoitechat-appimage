@@ -65,16 +65,14 @@ jobs:
           export PATH="/clangarm64/bin:$PATH"
           ninja -C build test
 
-      - name: Stage install (portable zip)
+      - name: Stage install (portable folder)
         run: |
           set -euxo pipefail
           export PATH="/clangarm64/bin:$PATH"
+          rm -rf package
           DESTDIR="$PWD/package" ninja -C build install
-          cd package
-          bsdtar -acf ../zoitechat-windows-arm64.zip .
-          cd ..
 
       - uses: actions/upload-artifact@v4
         with:
           name: zoitechat-windows-arm64
-          path: zoitechat-windows-arm64.zip
+          path: package/**
