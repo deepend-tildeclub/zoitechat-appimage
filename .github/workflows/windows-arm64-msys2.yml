@@ -75,7 +75,7 @@ jobs:
           DESTDIR="$PWD/dist" ninja -C build install
 
           # show where stuff actually landed (helps debugging packaging)
-          find dist -maxdepth 4 -type f \( -name 'zoitechat*.exe' -o -name '*.dll' \) -print || true
+          find dist -maxdepth 6 -type f \( -iname 'zoitechat*.exe' -o -iname '*.dll' \) -print || true
 
       - name: Harvest runtime DLL dependencies
         shell: msys2 {0}
@@ -93,7 +93,7 @@ jobs:
           fi
 
           # Prefer the directory that contains zoitechat.exe; otherwise fallback to dist/bin
-          mainexe="$(printf '%s\n' "${targets[@]}" | grep -iE '/zoitechat\.exe$' | head -n1 || true)"
+          mainexe="$(printf '%s\n' "${targets[@]}" | sed 's|\\|/|g' | grep -iE '/zoitechat\.exe$' | head -n1 || true)"
           if [ -n "$mainexe" ]; then
             bindir="$(dirname "$mainexe")"
           else
@@ -105,7 +105,6 @@ jobs:
           printf '%s\n' "${targets[@]}"
 
           for f in "${targets[@]}"; do
-            # ntldd can return non-zero; and grep can return 1 when no matches.
             while IFS= read -r dll; do
               [ -n "$dll" ] || continue
               cp -n "$dll" "$bindir/" || true
@@ -118,24 +117,55 @@ jobs:
             )
           done
 
-      - name: Install Inno Setup
+      - name: Install Inno Setup (real ISCC, not the Chocolatey shim)
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          if (-not (Get-Command iscc.exe -ErrorAction SilentlyContinue)) {
-            winget install --id JRSoftware.InnoSetup -e --accept-package-agreements --accept-source-agreements
+
+          function Find-Iscc {
+            $candidates = @(
+              "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe",
+              "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+            )
+            foreach ($p in $candidates) {
+              if (Test-Path $p) { return $p }
+            }
+            return $null
           }
 
-          $iscc = (Get-Command iscc.exe).Source
-          Write-Host "Inno Setup compiler:" $iscc
-          (Get-Item $iscc).VersionInfo | Select-Object ProductVersion, FileVersion | Format-List
+          $iscc = Find-Iscc
+
+          if (-not $iscc) {
+            if (Get-Command winget -ErrorAction SilentlyContinue) {
+              winget install --id JRSoftware.InnoSetup -e --accept-package-agreements --accept-source-agreements
+            }
+            $iscc = Find-Iscc
+          }
+
+          if (-not $iscc) {
+            if (Get-Command choco.exe -ErrorAction SilentlyContinue) {
+              choco install innosetup -y --no-progress
+            }
+            $iscc = Find-Iscc
+          }
+
+          if (-not $iscc) {
+            throw "ISCC.exe not found after install attempts. Checked Program Files Inno Setup paths."
+          }
+
+          Write-Host "Using ISCC:" $iscc
+          & $iscc /?
+
+          "ISCC=$iscc" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Build ARM64 installer
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          # update this path to wherever you commit the ARM64 .iss
-          iscc.exe "installer\zoitechat-arm64.iss"
+          if (-not (Test-Path "installer\zoitechat-arm64.iss")) {
+            throw "Missing installer\zoitechat-arm64.iss in repo"
+          }
+          & "$env:ISCC" "installer\zoitechat-arm64.iss"
 
       - uses: actions/upload-artifact@v4
         with:
