@@ -58,18 +58,48 @@ jobs:
         run: |
           set -eux
 
-          # linuxdeploy (AppImage)
           curl -fL --retry 3 -o linuxdeploy-x86_64.AppImage \
             https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
           chmod +x linuxdeploy-x86_64.AppImage
 
-          # linuxdeploy-plugin-gtk (NO releases; use the maintained plugin script)
           curl -fL --retry 3 -o linuxdeploy-plugin-gtk \
             https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh
           chmod +x linuxdeploy-plugin-gtk
-
-          # Make the plugin discoverable for --plugin gtk
           export PATH="${PWD}:${PATH}"
+
+          # Bundle CA certificates into the AppDir
+          install -Dm644 /etc/ssl/certs/ca-certificates.crt \
+            AppDir/etc/ssl/certs/ca-certificates.crt
+
+          # Custom AppRun: preserve typical AppDir runtime paths AND force CA bundle
+          cat > AppRun <<'EOF'
+          #!/bin/sh
+          set -eu
+
+          APPDIR="${APPDIR:-$(dirname "$(readlink -f "$0")")}"
+
+          export PATH="$APPDIR/usr/bin:${PATH:-/usr/bin:/bin}"
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
+          export XDG_DATA_DIRS="$APPDIR/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+          if [ -d "$APPDIR/usr/share/glib-2.0/schemas" ]; then
+            export GSETTINGS_SCHEMA_DIR="$APPDIR/usr/share/glib-2.0/schemas${GSETTINGS_SCHEMA_DIR:+:$GSETTINGS_SCHEMA_DIR}"
+          fi
+
+          if [ -d "$APPDIR/usr/lib/x86_64-linux-gnu/gio/modules" ]; then
+            export GIO_EXTRA_MODULES="$APPDIR/usr/lib/x86_64-linux-gnu/gio/modules${GIO_EXTRA_MODULES:+:$GIO_EXTRA_MODULES}"
+          elif [ -d "$APPDIR/usr/lib/gio/modules" ]; then
+            export GIO_EXTRA_MODULES="$APPDIR/usr/lib/gio/modules${GIO_EXTRA_MODULES:+:$GIO_EXTRA_MODULES}"
+          fi
+
+          # OpenSSL trust store override (fixes “unable to get local issuer certificate (20)”)
+          export SSL_CERT_FILE="${SSL_CERT_FILE:-$APPDIR/etc/ssl/certs/ca-certificates.crt}"
+          export SSL_CERT_DIR="${SSL_CERT_DIR:-$APPDIR/etc/ssl/certs}"
+          export CURL_CA_BUNDLE="${CURL_CA_BUNDLE:-$SSL_CERT_FILE}"
+
+          exec "$APPDIR/usr/bin/zoitechat" "$@"
+          EOF
+          chmod +x AppRun
 
           VERSION="$(git describe --tags --always)"
 
@@ -77,6 +107,7 @@ jobs:
             --appdir AppDir \
             --desktop-file AppDir/usr/share/applications/io.github.Zoitechat.desktop \
             --icon-file AppDir/usr/share/icons/hicolor/48x48/apps/io.github.Zoitechat.png \
+            --custom-apprun ./AppRun \
             --plugin gtk \
             --output appimage
 
