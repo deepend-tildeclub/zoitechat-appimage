@@ -38,4 +38,24 @@ void palette_alloc (GtkWidget * widget);
 void palette_load (void);
 void palette_save (void);
 
+/* Keep a copy of the user's palette so dark mode can be toggled without losing it. */
+void palette_user_set_color (int idx, const GdkColor *col);
+
+/*
+ * Apply ZoiteChat's built-in "dark mode" palette.
+ *
+ * When enabled, ZoiteChat switches to a curated dark-friendly palette for:
+ *  - message colors (mIRC palette)
+ *  - selection colors
+ *  - tab highlight colors
+ *  - chat/user/channel list background + foreground
+ *
+ * The user's palette is preserved in-memory and written to colors.conf even
+ * while dark mode is enabled, so disabling dark mode restores the previous
+ * colors without surprises.
+ *
+ * Returns TRUE if any palette entries were changed.
+ */
+gboolean palette_apply_dark_mode (gboolean enable);
+
 #endif

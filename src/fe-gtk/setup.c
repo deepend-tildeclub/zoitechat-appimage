@@ -33,6 +33,7 @@
 #include "fe-gtk.h"
 #include "gtkutil.h"
 #include "maingui.h"
+#include "chanview.h"
 #include "palette.h"
 #include "pixmaps.h"
 #include "menu.h"
@@ -53,6 +54,8 @@ static int last_selected_page = 0;
 static int last_selected_row = 0; /* sound row */
 static gboolean color_change;
 static struct zoitechatprefs setup_prefs;
+static GSList *color_selector_widgets;
+static GtkWidget *dark_mode_toggle_widget;
 static GtkWidget *cancel_button;
 static GtkWidget *font_dialog = NULL;
 
@@ -339,6 +342,17 @@ static const setting color_settings[] =
 	{ST_TOGGLE, N_("Topic"), P_OFFINTNL(hex_text_stripcolor_topic), 0, 0, 0},
 
 	{ST_END, 0, 0, 0, 0, 0}
+};
+
+static const setting dark_mode_setting =
+{
+	ST_TOGGLE,
+	N_("Enable dark mode"),
+	P_OFFINTNL(hex_gui_dark_mode),
+	N_("Applies ZoiteChat's built-in dark palette to the chat buffer, channel list, and user list.\n"
+	   "This includes message colors, selection colors, and interface highlights.\n"),
+	0,
+	0
 };
 
 static const char *const dccaccept[] =
@@ -1402,6 +1416,28 @@ setup_create_page (const setting *set)
 }
 
 static void
+setup_color_selectors_set_sensitive (gboolean sensitive)
+{
+	GSList *l = color_selector_widgets;
+	while (l)
+	{
+		GtkWidget *w = (GtkWidget *) l->data;
+		if (GTK_IS_WIDGET (w))
+			gtk_widget_set_sensitive (w, sensitive);
+		l = l->next;
+	}
+}
+
+static void
+setup_dark_mode_ui_toggle_cb (GtkToggleButton *but, gpointer userdata)
+{
+	(void) but;
+	(void) userdata;
+	/* Keep color selectors usable even when dark mode is enabled. */
+	setup_color_selectors_set_sensitive (TRUE);
+}
+
+static void
 setup_color_ok_cb (GtkWidget *button, GtkWidget *dialog)
 {
 	GtkColorSelectionDialog *cdialog = GTK_COLOR_SELECTION_DIALOG (dialog);
@@ -1433,6 +1469,10 @@ setup_color_ok_cb (GtkWidget *button, GtkWidget *dialog)
 
 	/* is this line correct?? */
 	gdk_colormap_free_colors (gtk_widget_get_colormap (button), &old_color, 1);
+
+	/* Keep a copy of the user's palette so we can restore it after dark mode. */
+	if (!prefs.hex_gui_dark_mode)
+		palette_user_set_color ((int)(col - colors), col);
 
 	gtk_widget_destroy (dialog);
 }
@@ -1495,6 +1535,9 @@ setup_create_color_button (GtkWidget *table, int num, int row, int col)
 	style->bg[GTK_STATE_NORMAL] = colors[num];
 	gtk_widget_set_style (but, style);
 	g_object_unref (style);
+
+	/* Track all color selector widgets (used for dark mode UI behavior). */
+	color_selector_widgets = g_slist_prepend (color_selector_widgets, but);
 }
 
 static void
@@ -1524,6 +1567,9 @@ setup_create_other_color (char *text, int num, int row, GtkWidget *tab)
 static GtkWidget *
 setup_create_color_page (void)
 {
+	color_selector_widgets = NULL;
+	dark_mode_toggle_widget = NULL;
+
 	GtkWidget *tab, *box, *label;
 	int i;
 
@@ -1570,8 +1616,11 @@ setup_create_color_page (void)
 	setup_create_other_colorR (_("Away user:"), COL_AWAY, 10, tab);
 	setup_create_other_color (_("Highlight:"), COL_HILIGHT, 11, tab);
 	setup_create_other_colorR (_("Spell checker:"), COL_SPELL, 11, tab);
-
-	setup_create_header (tab, 15, N_("Color Stripping"));
+	dark_mode_toggle_widget = setup_create_toggleL (tab, 13, &dark_mode_setting);
+	g_signal_connect (G_OBJECT (dark_mode_toggle_widget), "toggled",
+					G_CALLBACK (setup_dark_mode_ui_toggle_cb), NULL);
+	setup_color_selectors_set_sensitive (TRUE);
+setup_create_header (tab, 15, N_("Color Stripping"));
 
 	/* label = gtk_label_new (_("Strip colors from:"));
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
@@ -2048,9 +2097,24 @@ static void
 setup_apply_to_sess (session_gui *gui)
 {
 	mg_update_xtext (gui->xtext);
+	chanview_apply_theme ((chanview *) gui->chanview);
 
 	if (prefs.hex_gui_ulist_style)
 		gtk_widget_set_style (gui->user_tree, input_style);
+
+	if (prefs.hex_gui_ulist_style || prefs.hex_gui_dark_mode)
+	{
+		gtk_widget_modify_base (gui->user_tree, GTK_STATE_NORMAL, &colors[COL_BG]);
+		if (prefs.hex_gui_dark_mode)
+			gtk_widget_modify_text (gui->user_tree, GTK_STATE_NORMAL, &colors[COL_FG]);
+		else
+			gtk_widget_modify_text (gui->user_tree, GTK_STATE_NORMAL, NULL);
+	}
+	else
+	{
+		gtk_widget_modify_base (gui->user_tree, GTK_STATE_NORMAL, NULL);
+		gtk_widget_modify_text (gui->user_tree, GTK_STATE_NORMAL, NULL);
+	}
 
 	if (prefs.hex_gui_input_style)
 	{
@@ -2168,6 +2232,7 @@ setup_apply (struct zoitechatprefs *pr)
 	int do_ulist = FALSE;
 	int do_layout = FALSE;
 	int do_identd = FALSE;
+	int old_dark_mode = prefs.hex_gui_dark_mode;
 
 	if (strcmp (pr->hex_text_background, prefs.hex_text_background) != 0)
 		new_pix = TRUE;
@@ -2237,6 +2302,19 @@ setup_apply (struct zoitechatprefs *pr)
 	}
 
 	memcpy (&prefs, pr, sizeof (prefs));
+
+	/*
+	 * "Dark mode" applies ZoiteChat's built-in dark palette to the chat views.
+	 *
+	 * IMPORTANT: don't short-circuit this call.
+	 * We MUST run palette_apply_dark_mode() when the toggle changes, otherwise
+	 * the preference flips but the palette stays the same (aka: "nothing happens").
+	 */
+	{
+		gboolean pal_changed = palette_apply_dark_mode (prefs.hex_gui_dark_mode);
+		if (prefs.hex_gui_dark_mode != old_dark_mode || pal_changed)
+			color_change = TRUE;
+	}
 
 #ifdef WIN32
 	/* merge hex_font_main and hex_font_alternative into hex_font_normal */
@@ -2332,6 +2410,13 @@ static void
 setup_close_cb (GtkWidget *win, GtkWidget **swin)
 {
 	*swin = NULL;
+
+	if (color_selector_widgets)
+	{
+		g_slist_free (color_selector_widgets);
+		color_selector_widgets = NULL;
+		dark_mode_toggle_widget = NULL;
+	}
 
 	if (font_dialog)
 	{
