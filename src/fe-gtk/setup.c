@@ -54,7 +54,6 @@ static int last_selected_page = 0;
 static int last_selected_row = 0; /* sound row */
 static gboolean color_change;
 static struct zoitechatprefs setup_prefs;
-/* Color picker buttons on the Colors page (disabled when dark mode is enabled). */
 static GSList *color_selector_widgets;
 static GtkWidget *dark_mode_toggle_widget;
 static GtkWidget *cancel_button;
@@ -348,11 +347,10 @@ static const setting color_settings[] =
 static const setting dark_mode_setting =
 {
 	ST_TOGGLE,
-	N_("Enable dark mode for chat views"),
+	N_("Enable dark mode"),
 	P_OFFINTNL(hex_gui_dark_mode),
 	N_("Applies ZoiteChat's built-in dark palette to the chat buffer, channel list, and user list.\n"
-	   "This includes message colors, selection colors, and interface highlights.\n"
-	   "While dark mode is enabled, the color selectors in this page are disabled."),
+	   "This includes message colors, selection colors, and interface highlights.\n"),
 	0,
 	0
 };
@@ -1433,8 +1431,10 @@ setup_color_selectors_set_sensitive (gboolean sensitive)
 static void
 setup_dark_mode_ui_toggle_cb (GtkToggleButton *but, gpointer userdata)
 {
+	(void) but;
 	(void) userdata;
-	setup_color_selectors_set_sensitive (!gtk_toggle_button_get_active (but));
+	/* Keep color selectors usable even when dark mode is enabled. */
+	setup_color_selectors_set_sensitive (TRUE);
 }
 
 static void
@@ -1536,7 +1536,7 @@ setup_create_color_button (GtkWidget *table, int num, int row, int col)
 	gtk_widget_set_style (but, style);
 	g_object_unref (style);
 
-	/* Track all color selector widgets so we can disable them when dark mode is enabled. */
+	/* Track all color selector widgets (used for dark mode UI behavior). */
 	color_selector_widgets = g_slist_prepend (color_selector_widgets, but);
 }
 
@@ -1619,9 +1619,8 @@ setup_create_color_page (void)
 	dark_mode_toggle_widget = setup_create_toggleL (tab, 13, &dark_mode_setting);
 	g_signal_connect (G_OBJECT (dark_mode_toggle_widget), "toggled",
 					G_CALLBACK (setup_dark_mode_ui_toggle_cb), NULL);
-	setup_color_selectors_set_sensitive (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dark_mode_toggle_widget)));
-
-	setup_create_header (tab, 15, N_("Color Stripping"));
+	setup_color_selectors_set_sensitive (TRUE);
+setup_create_header (tab, 15, N_("Color Stripping"));
 
 	/* label = gtk_label_new (_("Strip colors from:"));
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
