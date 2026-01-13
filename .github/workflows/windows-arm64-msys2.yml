@@ -84,27 +84,38 @@ jobs:
           export PATH="/clangarm64/bin:$PATH"
           shopt -s nullglob
 
-          # Find installed EXEs and plugin DLLs no matter where prefix placed them
-          mapfile -t targets < <(find dist -type f \( -name 'zoitechat*.exe' -o -path '*/plugins/*.dll' \))
+          # Find installed EXEs and plugin DLLs
+          mapfile -t targets < <(find dist -type f \( -iname 'zoitechat*.exe' -o -ipath '*/plugins/*.dll' \) || true)
 
-          # If nothing found, don't fail the job, just skip
           if [ "${#targets[@]}" -eq 0 ]; then
             echo "No installed binaries/plugins found under dist/ (skipping dep harvest)"
             exit 0
           fi
 
-          # Put runtime DLLs beside the executables (common Windows expectation)
-          # Prefer dist/**/bin if it exists, otherwise create dist/bin
-          bindir="$(find dist -type d -name bin | head -n1 || true)"
-          if [ -z "$bindir" ]; then
+          # Prefer the directory that contains zoitechat.exe; otherwise fallback to dist/bin
+          mainexe="$(printf '%s\n' "${targets[@]}" | grep -iE '/zoitechat\.exe$' | head -n1 || true)"
+          if [ -n "$mainexe" ]; then
+            bindir="$(dirname "$mainexe")"
+          else
             bindir="dist/bin"
             mkdir -p "$bindir"
           fi
 
+          echo "Using bindir: $bindir"
+          printf '%s\n' "${targets[@]}"
+
           for f in "${targets[@]}"; do
-            ntldd -R "$f" | tr '\\' '/' | grep -E '^/clangarm64/bin/.*\.dll$' | while read -r dll; do
+            # ntldd can return non-zero; and grep can return 1 when no matches.
+            while IFS= read -r dll; do
+              [ -n "$dll" ] || continue
               cp -n "$dll" "$bindir/" || true
-            done
+            done < <(
+              ntldd -R "$f" 2>/dev/null \
+                | tr '\\' '/' \
+                | awk '{print $1}' \
+                | grep -E '^/clangarm64/(bin|lib)/.*\.dll$' \
+                || true
+            )
           done
 
       - name: Install Inno Setup
