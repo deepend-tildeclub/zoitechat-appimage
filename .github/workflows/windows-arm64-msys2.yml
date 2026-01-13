@@ -40,14 +40,12 @@ jobs:
           set -euxo pipefail
           export PATH="/clangarm64/bin:$PATH"
 
-          # Ensure gettext ITS data is available to msgfmt
           export MSGFMT="/clangarm64/bin/msgfmt"
           export GETTEXTDATADIR="/clangarm64/share/gettext"
 
           rm -rf build dist rel
           mkdir -p dist
 
-          # Clean DESTDIR layout: dist/bin, dist/lib, dist/share...
           meson setup build \
             --prefix=/ \
             --bindir=bin \
@@ -60,7 +58,6 @@ jobs:
             -Dc_link_args="-pthread -lwinpthread" \
             -Dcpp_link_args="-pthread -lwinpthread"
 
-          # Sanity check: python can import cffi now
           /clangarm64/bin/python.exe -c "import sys, cffi; print('python:', sys.version); print('cffi:', cffi.__version__)"
 
       - name: Build
@@ -160,18 +157,16 @@ jobs:
             iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
           }
 
-          # Force install to repair broken shims/missing tools
+          # Force reinstall so we get real binaries in expected locations on these odd runners
           choco install innosetup -y --force --no-progress | Out-Host
 
           $candidates = @()
 
-          # Common install paths
           $pf = ${env:ProgramFiles}
           $pfx86 = ${env:ProgramFiles(x86)}
-          if ($pf)   { $candidates += (Join-Path $pf   "Inno Setup 6\ISCC.exe") }
-          if ($pfx86){ $candidates += (Join-Path $pfx86 "Inno Setup 6\ISCC.exe") }
+          if ($pf)    { $candidates += (Join-Path $pf   "Inno Setup 6\ISCC.exe") }
+          if ($pfx86) { $candidates += (Join-Path $pfx86 "Inno Setup 6\ISCC.exe") }
 
-          # Chocolatey tools path (real binary often lives here)
           $chocoRoot = ${env:ChocolateyInstall}
           if ($chocoRoot -and (Test-Path $chocoRoot)) {
             $candidates += (Join-Path $chocoRoot "lib\innosetup\tools\ISCC.exe")
@@ -179,7 +174,6 @@ jobs:
               Select-Object -ExpandProperty FullName -First 10)
           }
 
-          # Registry uninstall keys sometimes provide InstallLocation
           $regKeys = @(
             "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1",
             "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1"
@@ -199,7 +193,7 @@ jobs:
           }
 
           Write-Host "Using ISCC:" $iscc
-          & $iscc /? | Out-Host
+          (Get-Item $iscc).VersionInfo | Select-Object ProductVersion, FileVersion | Format-List | Out-Host
 
           "ISCC_PATH=$iscc" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
@@ -218,6 +212,9 @@ jobs:
           }
 
           & $iscc "installer\zoitechat-arm64.iss" | Out-Host
+          if ($LASTEXITCODE -ne 0) {
+            throw "ISCC failed with exit code $LASTEXITCODE"
+          }
 
       - uses: actions/upload-artifact@v4
         with:
