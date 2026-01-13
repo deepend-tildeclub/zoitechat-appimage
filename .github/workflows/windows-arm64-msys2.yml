@@ -207,11 +207,11 @@ jobs:
             throw "ISCC_PATH missing or invalid."
           }
 
-          if (-not (Test-Path "installer\zoitechat-arm64.iss")) {
-            throw "installer\zoitechat-arm64.iss not found."
+          if (-not (Test-Path "win32\installer\zoitechat-arm64.iss")) {
+            throw "win32\installer\zoitechat-arm64.iss not found."
           }
 
-          & $iscc "installer\zoitechat-arm64.iss" | Out-Host
+          & $iscc "win32\installer\zoitechat-arm64.iss" | Out-Host
           if ($LASTEXITCODE -ne 0) {
             throw "ISCC failed with exit code $LASTEXITCODE"
           }
@@ -219,4 +219,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: zoitechat-windows-arm64-installer
-          path: installer\Output\*.exe
+          path: win32\installer\Output\*.exe
